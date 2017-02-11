@@ -18,9 +18,27 @@ from scipy.io import loadmat
 #Load the MNIST digit data
 M = loadmat("mnist_all.mat")
 
+# divide all data point by 255.0
+
+for digit in range(0,10):
+    train = "train" + str(digit)
+    M[train] = M[train].astype(float)
+    for i in range(0, len(M[train])):
+        M[train][i] = M[train][i]/255.0
+
+
 #Display the 150-th "5" digit from the training set
-imshow(M["train5"][150].reshape((28,28)), cmap=cm.gray)
-show()
+np.random.seed(0)
+# for digit in range(0,10):
+#    train = "train" + str(digit)
+#    set = np.random.sample((1, len(M[train]), 10)
+#    for i in range(0, 10):
+#        gs = GridSpec(5, 2)
+# gs = GridSpec(1,1)
+# ax1 = plt.subplot(gs[0])
+# ax1.plot(M["train0"][23].reshape((28,28)))
+# imshow(M["train0"][23].reshape((28,28)), cmap=cm.gray)
+# show()
 
 
 def softmax(y):
@@ -40,15 +58,25 @@ def forward(x, W0, b0, W1, b1):
     L1 = dot(W1.T, L0) + b1
     output = softmax(L1)
     return L0, L1, output
-    
-def NLL(y, y_):
-    return -sum(y_*log(y)) 
+
+# p is calculated results and y is actual results
+# this works or vector
+def NLL(p, y):
+    return -sum(y*log(p)) 
 
 def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
     '''Incomplete function for computing the gradient of the cross-entropy
     cost function w.r.t the parameters of a neural network'''
     dCdL1 =  y - y_
     dCdW1 =  dot(L0, dCdL1.T ) 
+    
+def lin_combin_double_layer(W0, W1, b0, b1, x):
+    h = lin_combin_single_layer(W0, b0, x)
+    return (lin_combin_single_layer(W1, b1, h))
+    
+    
+def lin_combin_single_layer(W0, b0, x):
+    return (dot(W0.T, x) + b0)
     
 
 #Load sample weights for the multilayer neural network

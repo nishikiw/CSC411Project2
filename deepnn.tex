@@ -53,12 +53,15 @@ The $o$'s here should simply be linear combinations of the $x$'s (that is, the a
 Please see the source code of the function below:
 
 \begin{lstlisting}[language=Python]
-def lin_combin_double_layer(W0, W1, b0, b1, x):
-    h = lin_combin_single_layer(W0, b0, x)
-    return (lin_combin_single_layer(W1, b1, h))
-    
+def softmax(y):
+    '''Return the output of the softmax function for the matrix of output y. y
+    is an NxM matrix where N is the number of outputs for a single case, and M
+    is the number of cases'''
+    return exp(y)/tile(sum(exp(y),0), (len(y),1))
 
-def lin_combin_single_layer(W0, b0, x):
-    return (dot(W0.T, x) + b0)
+
+def lin_combin(w, b, x):
+    o = (dot(w.T, x) + b)
+    return softmax(o)
 \end{lstlisting}
 \end{document}

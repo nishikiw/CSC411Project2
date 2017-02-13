@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6100 64-bit) (preloaded format=pdflatex 2016.12.4)  13 FEB 2017 16:28
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6100 64-bit) (preloaded format=pdflatex 2016.12.4)  13 FEB 2017 18:42
 entering extended mode
 **./deepnn.tex
 (deepnn.tex
@@ -392,19 +392,28 @@ Overfull \hbox (12.04381pt too wide) in paragraph at lines 48--49
 ("C:\Program Files\MiKTeX 2.9\tex\latex\listings\lstlang1.sty"
 File: lstlang1.sty 2015/06/04 1.6 listings language file
 )
+Overfull \hbox (42.71031pt too wide) in paragraph at lines 57--58
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (42.71031pt too wide) in paragraph at lines 58--59
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
 
 AED: lastpage setting LastPage
 [3
 
  <./logreg.png>] (deepnn.aux) ) 
 Here is how much of TeX's memory you used:
- 6069 strings out of 493333
- 87803 string characters out of 3139182
- 271766 words of memory out of 3000000
- 9505 multiletter control sequences out of 15000+200000
- 11045 words of font info for 42 fonts, out of 3000000 for 9000
+ 6072 strings out of 493333
+ 87805 string characters out of 3139182
+ 274766 words of memory out of 3000000
+ 9507 multiletter control sequences out of 15000+200000
+ 11391 words of font info for 43 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 42i,8n,43p,463b,1054s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 42i,8n,43p,463b,1122s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/
 amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
 /cm/cmbx12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex
@@ -412,10 +421,11 @@ amsfonts/cm/cmbx10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts
 C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Progra
 m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/M
 iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9
-/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on deepnn.pdf (3 pages, 248542 bytes).
+/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/ty
+pe1/public/amsfonts/cm/cmti10.pfb>
+Output written on deepnn.pdf (3 pages, 263432 bytes).
 PDF statistics:
- 48 PDF objects out of 1000 (max. 8388607)
+ 52 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -15,32 +15,34 @@ import cPickle
 import os
 from scipy.io import loadmat
 
-#Load the MNIST digit data
-M = loadmat("mnist_all.mat")
 
-# divide all data point by 255.0
+def main():
 
-for digit in range(0,10):
-    train = "train" + str(digit)
-    M[train] = M[train].astype(float)
-    for i in range(0, len(M[train])):
-        M[train][i] = M[train][i]/255.0
-        # maybe should reshape to (784,1). Currently it's (784, )
-
-
-Display 10 images of each.
-np.random.seed(0)
-gs = GridSpec(10, 10)
-for digit in range(0, 10):
-    train = "train" + str(digit)
-    set = [int(i) for i in np.random.sample(10)*len(M[train])]
-    for i in range(0, 10):
-       ax = plt.subplot(gs[10*digit+i])
-       ax.imshow(M[train][set[i]].reshape((28, 28)), cmap = cm.gray)
-
-# Save the figure for part1 if it's not already in current folder
-if not os.path.exists("part1.png"):
-    plt.savefig('part1.png')
+    #Load the MNIST digit data
+    M = loadmat("mnist_all.mat")
+    
+    # divide all data point by 255.0
+    
+    for digit in range(0,10):
+        train = "train" + str(digit)
+        M[train] = M[train].astype(float)
+        for i in range(0, len(M[train])):
+            M[train][i] = M[train][i]/255.0
+            # maybe should reshape to (784,1). Currently it's (784, )
+    
+    # Display 10 images of each.
+    np.random.seed(0)
+    gs = GridSpec(10, 10)
+    for digit in range(0, 10):
+        train = "train" + str(digit)
+        set = [int(i) for i in np.random.sample(10)*len(M[train])]
+        for i in range(0, 10):
+            ax = plt.subplot(gs[10*digit+i])
+            ax.imshow(M[train][set[i]].reshape((28, 28)), cmap = cm.gray)
+    
+    # Save the figure for part1 if it's not already in current folder
+    if not os.path.exists("part1.png"):
+        plt.savefig('part1.png')
 
 
 def softmax(y):
@@ -49,11 +51,13 @@ def softmax(y):
     is the number of cases'''
     return exp(y)/tile(sum(exp(y),0), (len(y),1))
     
+    
 def tanh_layer(y, W, b):    
     '''Return the output of a tanh layer for the input matrix y. y
     is an NxM matrix where N is the number of inputs for a single case, and M
     is the number of cases'''
     return tanh(dot(W.T, y)+b)
+
 
 def forward(x, W0, b0, W1, b1):
     L0 = tanh_layer(x, W0, b0)
@@ -67,9 +71,11 @@ def forward(x, W0, b0, W1, b1):
 def NLL(p, y):
     return -sum(y*log(p)) 
     
+    
 def NLL_gradient(w, y, x):
     p = lin_combin(w, b, x)
     return dot(x, (p - y).T)
+    
     
 def grad_descent(f, df, x, y, init_w, init_b, alpha, max_iteration):
     EPS = 1e-10   #EPS = 10**(-10)
@@ -92,10 +98,11 @@ def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
     dCdL1 =  y - y_
     dCdW1 =  dot(L0, dCdL1.T ) 
     
+    
 # follow the diagram
 # for part 2, W should be 784 x 10. b should be 10 x 1
-def lin_combin(W0, b0, x):
-    o = (dot(W0.T, x) + b0)
+def lin_combin(w, b, x):
+    o = (dot(w.T, x) + b)
     return softmax(o)
 
 

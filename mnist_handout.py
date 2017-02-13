@@ -8,7 +8,7 @@ from scipy.misc import imresize
 import matplotlib.image as mpimg
 from scipy.ndimage import filters
 import urllib
-from numpy import random
+import os
 
 import cPickle
 
@@ -27,18 +27,19 @@ for digit in range(0,10):
         M[train][i] = M[train][i]/255.0
 
 
-#Display the 150-th "5" digit from the training set
+#Display 10 images of each.
 np.random.seed(0)
-# for digit in range(0,10):
-#    train = "train" + str(digit)
-#    set = np.random.sample((1, len(M[train]), 10)
-#    for i in range(0, 10):
-#        gs = GridSpec(5, 2)
-# gs = GridSpec(1,1)
-# ax1 = plt.subplot(gs[0])
-# ax1.plot(M["train0"][23].reshape((28,28)))
-# imshow(M["train0"][23].reshape((28,28)), cmap=cm.gray)
-# show()
+gs = GridSpec(10, 10)
+for digit in range(0, 10):
+    train = "train" + str(digit)
+    set = [int(i) for i in np.random.sample(10)*len(M[train])]
+    for i in range(0, 10):
+       ax = plt.subplot(gs[10*digit+i])
+       ax.imshow(M[train][set[i]].reshape((28, 28)), cmap = cm.gray)
+
+# Save the figure for part1 if it's not already in current folder
+if not os.path.exists("part1.png"):
+    plt.savefig('part1.png')
 
 
 def softmax(y):
@@ -59,10 +60,12 @@ def forward(x, W0, b0, W1, b1):
     output = softmax(L1)
     return L0, L1, output
 
+
 # p is calculated results and y is actual results
 # this works or vector
 def NLL(p, y):
     return -sum(y*log(p)) 
+
 
 def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
     '''Incomplete function for computing the gradient of the cross-entropy

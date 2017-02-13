@@ -25,9 +25,10 @@ for digit in range(0,10):
     M[train] = M[train].astype(float)
     for i in range(0, len(M[train])):
         M[train][i] = M[train][i]/255.0
+        # maybe should reshape to (784,1). Currently it's (784, )
 
 
-#Display 10 images of each.
+Display 10 images of each.
 np.random.seed(0)
 gs = GridSpec(10, 10)
 for digit in range(0, 10):
@@ -65,6 +66,21 @@ def forward(x, W0, b0, W1, b1):
 # this works or vector
 def NLL(p, y):
     return -sum(y*log(p)) 
+    
+def NLL_gradient(p, y, x):
+    return dot((p-y), x)
+    
+def grad_descent(f, df, x, y, init_t, alpha):
+    EPS = 1e-10   #EPS = 10**(-10)
+    prev_t = init_t-10*EPS
+    t = init_t.copy()
+    max_iter = 30000
+    iter  = 0
+    while norm(t - prev_t) >  EPS and iter < max_iter:
+        prev_t = t.copy()
+        t -= alpha*df(x, y, t)
+        iter += 1
+    return t
 
 
 def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
@@ -73,20 +89,18 @@ def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
     dCdL1 =  y - y_
     dCdW1 =  dot(L0, dCdL1.T ) 
     
-def lin_combin_double_layer(W0, W1, b0, b1, x):
-    h = lin_combin_single_layer(W0, b0, x)
-    return (lin_combin_single_layer(W1, b1, h))
+# follow the diagram
+# for part 2, W should be 784 x 10. b should be 10 x 1
+def lin_combin(W0, b0, x):
+    o = (dot(W0.T, x) + b0)
+    return softmax(o)
     
-    
-def lin_combin_single_layer(W0, b0, x):
-    return (dot(W0.T, x) + b0)
-    
-
+'''
 #Load sample weights for the multilayer neural network
 snapshot = cPickle.load(open("snapshot50.pkl"))
-W0 = snapshot["W0"]
+W0 = snapshot["W0"] #784 x 300
 b0 = snapshot["b0"].reshape((300,1))
-W1 = snapshot["W1"]
+W1 = snapshot["W1"] #300 x 10
 b1 = snapshot["b1"].reshape((10,1))
 
 #Load one example from the training set, and run it through the
@@ -104,3 +118,4 @@ y = argmax(output)
 #fig.colorbar(heatmap, shrink = 0.5, aspect=5)
 #show()
 ################################################################################
+'''

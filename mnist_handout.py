@@ -67,20 +67,23 @@ def forward(x, W0, b0, W1, b1):
 def NLL(p, y):
     return -sum(y*log(p)) 
     
-def NLL_gradient(p, y, x):
-    return dot((p-y), x)
+def NLL_gradient(w, y, x):
+    p = lin_combin(w, b, x)
+    return dot(x, (p - y).T)
     
-def grad_descent(f, df, x, y, init_t, alpha):
+def grad_descent(f, df, x, y, init_w, init_b, alpha, max_iteration):
     EPS = 1e-10   #EPS = 10**(-10)
-    prev_t = init_t-10*EPS
-    t = init_t.copy()
-    max_iter = 30000
+    prev_w = init_w-10*EPS
+    w = init_w.copy()
     iter  = 0
-    while norm(t - prev_t) >  EPS and iter < max_iter:
-        prev_t = t.copy()
-        t -= alpha*df(x, y, t)
+    while norm(w - prev_w) >  EPS and iter < max_iter:
+        prev_w = w.copy()
+        p = lin_combin(w, b, x)
+        w -= alpha*df(p, y, x)
         iter += 1
-    return t
+        if (iter % 1000 == 0):
+            print("iter", iter, "NLL(x)", f(p, y))
+    return w
 
 
 def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
@@ -94,7 +97,16 @@ def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
 def lin_combin(W0, b0, x):
     o = (dot(W0.T, x) + b0)
     return softmax(o)
-    
+
+
+# x should be 784 x 5000
+# y should be 10 x 5000
+# b should be same as y
+# w should be 784 x 10
+
+
+
+
 '''
 #Load sample weights for the multilayer neural network
 snapshot = cPickle.load(open("snapshot50.pkl"))

@@ -31,9 +31,8 @@ def main():
             
     #part1(M)
     #part3b()
-    part4()
+    part4(M)
     
-
 
 def part1(M):
     """Coding part for part 1."""
@@ -56,7 +55,7 @@ def part3b():
     return
 
 
-def part4():
+def part4(M):
     """Coding part for part 4."""
     
     x = setup_x(M)

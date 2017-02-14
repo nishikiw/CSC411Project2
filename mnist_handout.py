@@ -28,8 +28,8 @@ def main():
         M[train] = M[train].astype(float)
         for i in range(0, len(M[train])):
             M[train][i] = M[train][i]/255.0
-            # maybe should reshape to (784,1). Currently it's (784, )
-    
+            
+    """
     # Display 10 images of each.
     np.random.seed(0)
     gs = GridSpec(10, 10)
@@ -43,6 +43,16 @@ def main():
     # Save the figure for part1 if it's not already in current folder
     if not os.path.exists("part1.png"):
         plt.savefig('part1.png')
+    """
+    
+    x = setup_x(M)
+    y = setup_y(M)
+    
+    w0 = np.zeros((784, 10))
+    b = np.zeros(y.shape) # make it same shape as y
+    
+    w = grad_descent(NLL, NLL_gradient, x, y, w0, b, 0.00000001, 30000)
+    
 
 
 def softmax(y):
@@ -68,11 +78,12 @@ def forward(x, W0, b0, W1, b1):
 
 # p is calculated results and y is actual results
 # this works or vector
-def NLL(p, y):
+def NLL(x, y, w, b):
+    p = lin_combin(w, b, x)
     return -sum(y*log(p)) 
     
     
-def NLL_gradient(w, y, x):
+def NLL_gradient(x, y, w, b):
     p = lin_combin(w, b, x)
     return dot(x, (p - y).T)
     
@@ -81,10 +92,9 @@ def grad_descent(f, df, x, y, init_w, init_b, alpha, max_iteration):
     EPS = 1e-10   #EPS = 10**(-10)
     prev_w = init_w-10*EPS
     w = init_w.copy()
-    iter  = 0
+    iter = 0
     while norm(w - prev_w) >  EPS and iter < max_iter:
         prev_w = w.copy()
-        p = lin_combin(w, b, x)
         w -= alpha*df(p, y, x)
         iter += 1
         if (iter % 1000 == 0):
@@ -110,8 +120,33 @@ def lin_combin(w, b, x):
 # y should be 10 x 5000
 # b should be same as y
 # w should be 784 x 10
+def setup_x(M):
+    x = np.zeros((784,), dtype=float) # dummy row. will delete later
+    for digit in range(0,10):
+        train = "train" + str(digit)
+        for i in range(0, len(M[train])):
+            x = vstack((x, M[train][i]))
+    
+    x = np.delete(x, (0), axis=0) #delete dummy row
+    return x.T
+
+def setup_y(M):
+    y = np.zeros((10,))
+    for digit in range(0,10):
+        train = "train" + str(digit)
+        z = np.zeros((10,))
+        z[digit] = 1
+        for i in range(0, len(M[train])):
+            y = vstack((y, z))
+    y = np.delete(y, (0), axis=0)
+    return y.T
 
 
+"""
+calling main function.
+"""
+
+main()
 
 
 '''

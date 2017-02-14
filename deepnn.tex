@@ -10,6 +10,7 @@
 \usepackage{lastpage} % Required to determine the last page for the footer
 \usepackage{listings} % Required for insertion of code
 \usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{mathtools}
 \usepackage{subcaption}
 
 \usepackage[margin=1in]{geometry}
@@ -75,8 +76,40 @@ We would like to use the sum of the negative log-probabilities of all the traini
 Compute the gradient of the cost function with respect to the weight $w_{ij}$. Justify every step. You may refer to Slide 7 of the One-Hot Encoding lecture , but note that you need to justify every step there, and that your cost function is the sum over all the training examples.
 
 \paragraph{Answer}
-Let $j$ refers to the input size (number of $x$ per sample) and $i$ refers to the output size (number of $o$ per sample), and $k$ refers to the training set size (number of samples).
-\\
+We could calculate $\frac{\partial p_j}{\partial o_i}$ in two cases:
+\begin{enumerate}
+\item If $j = i$,
+\begin{align*}
+\frac{\partial p_i}{\partial o_i} &= \frac{e^{o_i}}{\sum_{k}e^{o_k}} - \frac{e^{o_i}}{\sum_{k}e^{o_k}} \cdot \frac{e^{o_i}}{\sum_{k}e^{o_k}}\\
+&= p_i(1 - p_i)
+\end{align*}
+\item If $j \neq i$,
+\begin{align*}
+\frac{\partial p_j}{\partial o_i} &= -\frac{e^{o_j}}{\sum_{k}e^{o_k}} \cdot \frac{e^{o_i}}{\sum_{k}e^{o_k}}\\
+&= -p_jp_i
+\end{align*}
+\end{enumerate}
+In summary,
+\begin{equation}
+    \frac{\partial p_j}{\partial o_i} =
+    \begin{cases*}
+      p_i(1 - p_i) &, if $j = i$ \\
+      -p_jp_i &, if $j \neq i$
+    \end{cases*}
+\end{equation}
+\[\frac{\partial C}{\partial p_j} = -\frac{y_j}{p_j}\]
+\begin{align*}
+\frac{\partial C}{\partial o_{i}} &= \sum_{j}\frac{\partial C}{\partial p_j} \frac{\partial p_j}{\partial o_i}\\
+&= \sum_{j, j \neq i}\frac{\partial C}{\partial p_j} \frac{\partial p_j}{\partial o_i} + \frac{\partial C}{\partial p_i} \frac{\partial p_i}{\partial o_i}\\
+&= \sum_{j, j \neq i}(-\frac{y_j}{p_j}) \cdot (-p_jp_i) - \frac{y_i}{p_i} \cdot p_i(1 - p_i)
+&= p_{i} - y_{i}
+\end{align*}
+Because $y_j = 0$ if $j \neq i$ and $y_i = 1$, $\sum_{j, j \neq i}(-\frac{y_j}{p_j}) \cdot (-p_jp_i) = 0$. Then,
+\begin{align*}
+\frac{\partial C}{\partial o_{i}} &= - \frac{y_i}{p_i} \cdot p_i(1 - p_i)\\
+&= p_i - y_i
+\end{align*}
+For the following equation, let $j$ refers to the input size (number of $x$ per sample) and $i$ refers to the output size (number of $o$ per sample), and $k$ refers to the training set size (number of samples).\\
 \\
 $X$ is the input matrix with dimension $n \times m$, where $n$ is the number $x$ (related to $j$) and $m$ is the sample size (related to $k$). $P$ is the calculated result matrix after using softmax with dimension $d \times m$, where $d$ is the output size (number of outputs per sample, related to $i$). $Y$ is the expected output with the same dimension as $P$.
 \[\frac{\partial C}{\partial o_{ik}} = p_{ik} - y_{ik}\]

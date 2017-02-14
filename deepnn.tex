@@ -40,7 +40,6 @@ Please see the images of each digits below. For the same digit, some images have
 
 \section*{Part 2}
 
-\section*{Part 1}
 \paragraph{Question}
 Implement a function that computes the network below.
 \begin{figure*}[h]
@@ -64,4 +63,33 @@ def lin_combin(w, b, x):
     o = (dot(w.T, x) + b)
     return softmax(o)
 \end{lstlisting}
+
+
+\clearpage
+
+\section*{Part 3}
+We would like to use the sum of the negative log-probabilities of all the training cases as the cost function.
+
+\subsection*{Part 3(a)}
+\paragraph{Question}
+Compute the gradient of the cost function with respect to the weight $w_{ij}$. Justify every step. You may refer to Slide 7 of the One-Hot Encoding lecture , but note that you need to justify every step there, and that your cost function is the sum over all the training examples.
+
+\paragraph{Answer}
+Let $j$ refers to the input size (number of $x$ per sample) and $i$ refers to the output size (number of $o$ per sample), and $k$ refers to the training set size (number of samples).
+\\
+\\
+$X$ is the input matrix with dimension $n \times m$, where $n$ is the number $x$ (related to $j$) and $m$ is the sample size (related to $k$). $P$ is the calculated result matrix after using softmax with dimension $d \times m$, where $d$ is the output size (number of outputs per sample, related to $i$). $Y$ is the expected output with the same dimension as $P$.
+\[\frac{\partial C}{\partial o_{ik}} = p_{ik} - y_{ik}\]
+\[\frac{\partial o_{ik}}{\partial w_{ij}} = x_{jk}\]
+\begin{align*}
+\frac{\partial C}{\partial w_{ij}} &= \sum_{k}\frac{\partial C}{\partial o_{ik}} \cdot \frac{\partial o_{ik}}{\partial w_{ij}}\\
+&= \sum_{k}x_{jk}(p_{ik} - y_{ik})\\
+&= X(P - Y)^T
+\end{align*}
+\subsection*{Part 3(b)}
+\paragraph{Question}
+Write vectorized code that computes the gradient with respect to the cost function. Check that the gradient was computed correctly by approximating the gradient at several coordinates using finite differences. Include the code for computing the gradient in vectorized form in your report.
+
+\paragraph{Answer}
+
 \end{document}

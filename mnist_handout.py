@@ -116,6 +116,51 @@ def lin_combin(w, b, x):
     return softmax(o)
 
 
+def finite_diff_gradient(x, y, w, b, i, j, h):
+    """
+    Use finite difference to calculate the gradient on w_ij with h.
+    x: input
+    y: expected output
+    w: weight
+    b: bias
+    """
+    
+    p = lin_combin(w, b, x)
+    new_w = w
+    new_w[i, j] += h
+    new_p = lin_combin(new_w, b, x)
+    return (new_p - p)/h
+
+
+def test_gradient(x, y, theta):
+    """
+    Compare the result of my gradient function dj and the gradient get from 
+    finite differences method. Test three times on different theta_pq.
+    """
+    
+    ps = [0, 1, 0]
+    qs = [0, 0, 1]
+    
+    h = 10e-10
+    
+    for i in range(0, 3):
+        p = ps[i]
+        q = qs[i]
+        g_finite = finite_diff_gradient(x, y, theta, p, q, h)
+        g_dj = dj(x, y, theta)[p, q]
+        diff = g_dj - g_finite
+        print("Test "+str(i)+":")
+        print("gradient_finite_differences = "+str(g_finite))
+        print("gradient_my_function = "+str(g_dj))
+        print("difference = "+str(diff))
+        print("-------------------------------")
+        
+
+def part3b():
+    """Test gradient for part 3b."""
+     
+
+
 # x should be 784 x 5000
 # y should be 10 x 5000
 # b should be same as y

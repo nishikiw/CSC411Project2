@@ -30,8 +30,8 @@ def main():
             M[train][i] = M[train][i]/255.0
             
     #part1(M)
-    #part3b()
-    part4(M)
+    part3b(M)
+    #part4(M)
     
 
 def part1(M):
@@ -50,9 +50,16 @@ def part1(M):
         plt.savefig('part1.png')
 
 
-def part3b():
+def part3b(M):
     """Test gradient for part 3b."""
-    return
+    
+    x1 = M["train8"][0]
+    x2 = M["train8"][1]
+    x = vstack((x1, x2)).T
+    y = array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]).T
+    w = zeros((x.shape[0], 10))
+    b = zeros((10, 2))
+    test_gradient(x, y, b, w)
 
 
 def part4(M):
@@ -137,33 +144,33 @@ def finite_diff_gradient(x, y, w, b, i, j, h):
     b: bias
     """
     
-    p = lin_combin(w, b, x)
+    c = NLL(x, y, w, b) 
     new_w = w
     new_w[i, j] += h
-    new_p = lin_combin(new_w, b, x)
-    return (new_p - p)/h
+    new_c = NLL(x, y, new_w, b) 
+    return (new_c - c)/h
 
 
-def test_gradient(x, y, theta):
+def test_gradient(x, y, b, w):
     """
-    Compare the result of my gradient function dj and the gradient get from 
-    finite differences method. Test three times on different theta_pq.
+    Compare the result of my gradient function NLL_gradient and the gradient get 
+    from finite differences method. Test three times on different w_ij.
     """
     
-    ps = [0, 1, 0]
-    qs = [0, 0, 1]
+    j_list = [5, 8, 8]
+    i_list = [300, 601, 600]
     
-    h = 10e-10
+    h = 10e-5
     
-    for i in range(0, 3):
-        p = ps[i]
-        q = qs[i]
-        g_finite = finite_diff_gradient(x, y, theta, p, q, h)
-        g_dj = dj(x, y, theta)[p, q]
-        diff = g_dj - g_finite
-        print("Test "+str(i)+":")
+    for k in range(0, 3):
+        i = i_list[k]
+        j = j_list[k]
+        g_finite = finite_diff_gradient(x, y, w, b, i, j, h)
+        g_mine = NLL_gradient(x, y, w, b)[i, j]
+        diff = abs(g_mine - g_finite)
+        print("Test "+str(k)+":")
         print("gradient_finite_differences = "+str(g_finite))
-        print("gradient_my_function = "+str(g_dj))
+        print("gradient_my_function = "+str(g_mine))
         print("difference = "+str(diff))
         print("-------------------------------")     
 

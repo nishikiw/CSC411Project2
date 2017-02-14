@@ -29,8 +29,14 @@ def main():
         for i in range(0, len(M[train])):
             M[train][i] = M[train][i]/255.0
             
-    """
-    # Display 10 images of each.
+    #part1(M)
+    #part3b()
+    part4()
+    
+
+
+def part1(M):
+    """Coding part for part 1."""
     np.random.seed(0)
     gs = GridSpec(10, 10)
     for digit in range(0, 10):
@@ -43,7 +49,15 @@ def main():
     # Save the figure for part1 if it's not already in current folder
     if not os.path.exists("part1.png"):
         plt.savefig('part1.png')
-    """
+
+
+def part3b():
+    """Test gradient for part 3b."""
+    return
+
+
+def part4():
+    """Coding part for part 4."""
     
     x = setup_x(M)
     y = setup_y(M)
@@ -53,7 +67,6 @@ def main():
     
     w = grad_descent(NLL, NLL_gradient, x, y, w0, b, 0.00000001, 30000)
     
-
 
 def softmax(y):
     '''Return the output of the softmax function for the matrix of output y. y
@@ -153,12 +166,7 @@ def test_gradient(x, y, theta):
         print("gradient_finite_differences = "+str(g_finite))
         print("gradient_my_function = "+str(g_dj))
         print("difference = "+str(diff))
-        print("-------------------------------")
-        
-
-def part3b():
-    """Test gradient for part 3b."""
-     
+        print("-------------------------------")     
 
 
 # x should be 784 x 5000
@@ -175,6 +183,7 @@ def setup_x(M):
     x = np.delete(x, (0), axis=0) #delete dummy row
     return x.T
 
+
 def setup_y(M):
     y = np.zeros((10,))
     for digit in range(0,10):
@@ -190,8 +199,8 @@ def setup_y(M):
 """
 calling main function.
 """
-
-main()
+if __name__ == '__main__':
+    main()
 
 
 '''

@@ -101,13 +101,13 @@ In summary,
 \begin{align*}
 \frac{\partial C}{\partial o_{i}} &= \sum_{j}\frac{\partial C}{\partial p_j} \frac{\partial p_j}{\partial o_i}\\
 &= \sum_{j, j \neq i}\frac{\partial C}{\partial p_j} \frac{\partial p_j}{\partial o_i} + \frac{\partial C}{\partial p_i} \frac{\partial p_i}{\partial o_i}\\
-&= \sum_{j, j \neq i}(-\frac{y_j}{p_j}) \cdot (-p_jp_i) - \frac{y_i}{p_i} \cdot p_i(1 - p_i)
-&= p_{i} - y_{i}
+&= \sum_{j, j \neq i}(-\frac{y_j}{p_j}) \cdot (-p_jp_i) - \frac{y_i}{p_i} \cdot p_i(1 - p_i)\\
+&= \sum_{j, j \neq i}y_jp_i - y_i + yip_i\\
+&= \sum_{j}y_jp_i - y_i\\
 \end{align*}
-Because $y_j = 0$ if $j \neq i$ and $y_i = 1$, $\sum_{j, j \neq i}(-\frac{y_j}{p_j}) \cdot (-p_jp_i) = 0$. Then,
+Because $\sum_{j}y_j = 1$, $\sum_{j}y_jp_i = p_i$. Then,
 \begin{align*}
-\frac{\partial C}{\partial o_{i}} &= - \frac{y_i}{p_i} \cdot p_i(1 - p_i)\\
-&= p_i - y_i
+\frac{\partial C}{\partial o_{i}} &= p_i - y_i
 \end{align*}
 For the following equation, let $j$ refers to the input size (number of $x$ per sample) and $i$ refers to the output size (number of $o$ per sample), and $k$ refers to the training set size (number of samples).\\
 \\

@@ -124,5 +124,67 @@ $X$ is the input matrix with dimension $n \times m$, where $n$ is the number $x$
 Write vectorized code that computes the gradient with respect to the cost function. Check that the gradient was computed correctly by approximating the gradient at several coordinates using finite differences. Include the code for computing the gradient in vectorized form in your report.
 
 \paragraph{Answer}
+\begin{lstlisting}[language=Python]
+def part3b(M):
+    """Test gradient for part 3b."""
+    
+    x1 = M["train8"][0]
+    x2 = M["train8"][1]
+    x = vstack((x1, x2)).T
+    y = array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]).T
+    w = zeros((x.shape[0], 10))
+    b = zeros((10, 2))
+    test_gradient(x, y, b, w)
+
+
+def test_gradient(x, y, b, w):
+    """
+    Compare the result of my gradient function NLL_gradient and the gradient get 
+    from finite differences method. Test three times on different w_ij.
+    """
+    
+    j_list = [5, 8, 8]
+    i_list = [300, 601, 600]
+    
+    h = 10e-5
+    
+    for k in range(0, 3):
+        i = i_list[k]
+        j = j_list[k]
+        g_finite = finite_diff_gradient(x, y, w, b, i, j, h)
+        g_mine = NLL_gradient(x, y, w, b)[i, j]
+        diff = abs(g_mine - g_finite)
+        print("Test "+str(k)+":")
+        print("gradient_finite_differences = "+str(g_finite))
+        print("gradient_my_function = "+str(g_mine))
+        print("difference = "+str(diff))
+        print("-------------------------------")    
+
+
+def finite_diff_gradient(x, y, w, b, i, j, h):
+    """
+    Use finite difference to calculate the gradient on w_ij with h.
+    x: input
+    y: expected output
+    w: weight
+    b: bias
+    """
+    
+    c = NLL(x, y, w, b) 
+    new_w = w
+    new_w[i, j] += h
+    new_c = NLL(x, y, new_w, b) 
+    return (new_c - c)/h
+
+
+def NLL(x, y, w, b):
+    p = lin_combin(w, b, x)
+    return -sum(y*log(p)) 
+    
+    
+def NLL_gradient(x, y, w, b):
+    p = lin_combin(w, b, x)
+    return dot(x, (p - y).T)
+\end{lstlisting}
 
 \end{document}

@@ -30,8 +30,8 @@ def main():
             M[train][i] = M[train][i]/255.0
             
     #part1(M)
-    part3b(M)
-    #part4(M)
+    #part3b(M)
+    part4(M)
     
 
 def part1(M):
@@ -65,9 +65,16 @@ def part3b(M):
 def part4(M):
     """Coding part for part 4."""
     
-    x = setup_x(M)
-    y = setup_y(M)
-    
+    if not os.path.exists("x.txt"):
+        x = setup_x(M)
+    else:
+        x = loadtxt("x.txt");
+    print("x is set up")
+    if not os.path.exists("y.txt"):
+        y = setup_y(M)
+    else:
+        y = loadtxt("y.txt")
+    print("y is set up")
     w0 = np.zeros((784, 10))
     b = np.zeros(y.shape) # make it same shape as y
     
@@ -116,8 +123,8 @@ def grad_descent(f, df, x, y, init_w, init_b, alpha, max_iteration):
         prev_w = w.copy()
         w -= alpha*df(p, y, x)
         iter += 1
-        if (iter % 1000 == 0):
-            print("iter", iter, "NLL(x)", f(p, y))
+        #if (iter % 1000 == 0):
+        print("iter", iter, "NLL(x)", f(p, y))
     return w
 
 

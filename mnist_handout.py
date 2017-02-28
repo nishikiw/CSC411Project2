@@ -114,10 +114,10 @@ def grad_descent(f, df, x, y, init_w, init_b, alpha, max_iteration):
     iter = 0
     while norm(w - prev_w) >  EPS and iter < max_iter:
         prev_w = w.copy()
-        w -= alpha*df(p, y, x)
+        w -= alpha*df(x, y, w, init_b)
         iter += 1
         if (iter % 1000 == 0):
-            print("iter", iter, "NLL(x)", f(p, y))
+            print("iter", iter, "NLL(x)", f(x, y, w, init_b))
     return w
 
 

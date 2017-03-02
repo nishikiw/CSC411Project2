@@ -22,13 +22,13 @@ def main():
     M = loadmat("mnist_all.mat")
     
     # divide all data point by 255.0
-    
     for digit in range(0,10):
         train = "train" + str(digit)
         M[train] = M[train].astype(float)
         for i in range(0, len(M[train])):
             M[train][i] = M[train][i]/255.0
-            
+    
+    np.random.seed(0)
     #part1(M)
     #part3b(M)
     part4(M)
@@ -36,7 +36,6 @@ def main():
 
 def part1(M):
     """Coding part for part 1."""
-    np.random.seed(0)
     gs = GridSpec(10, 10)
     for digit in range(0, 10):
         train = "train" + str(digit)
@@ -64,21 +63,24 @@ def part3b(M):
 
 def part4(M):
     """Coding part for part 4."""
-    
     if not os.path.exists("x.txt"):
         x = setup_x(M)
+        np.savetxt("x.txt", x)
     else:
         x = loadtxt("x.txt");
+        
     print("x is set up")
     if not os.path.exists("y.txt"):
         y = setup_y(M)
+        np.savetxt("y.txt", y)
     else:
         y = loadtxt("y.txt")
     print("y is set up")
-    w0 = np.zeros((784, 10))
-    b = np.zeros(y.shape) # make it same shape as y
+    w0 = np.random.rand(785, 10)
+    #b = np.zeros(y.shape) # make it same shape as y
     
-    w = grad_descent(NLL, NLL_gradient, x, y, w0, b, 0.00000001, 30000)
+    w = grad_descent(NLL, NLL_gradient, x, y, w0, 0.00001, 10000)
+    
     
 
 def softmax(y):
@@ -104,27 +106,32 @@ def forward(x, W0, b0, W1, b1):
 
 # p is calculated results and y is actual results
 # this works or vector
-def NLL(x, y, w, b):
-    p = lin_combin(w, b, x)
+def NLL(x, y, w):
+    x = vstack( (ones((1, x.shape[1])), x)) # add the "b"
+    p = lin_combin(w, x)
     return -sum(y*log(p)) 
     
     
-def NLL_gradient(x, y, w, b):
-    p = lin_combin(w, b, x)
+def NLL_gradient(x, y, w):
+    x = vstack( (ones((1, x.shape[1])), x)) # add the "b"
+    p = lin_combin(w, x)
     return dot(x, (p - y).T)
     
     
-def grad_descent(f, df, x, y, init_w, init_b, alpha, max_iteration):
+def grad_descent(f, df, x, y, init_w, alpha, max_iter):
     EPS = 1e-10   #EPS = 10**(-10)
     prev_w = init_w-10*EPS
     w = init_w.copy()
+    performance = np.array(w)
     iter = 0
     while norm(w - prev_w) >  EPS and iter < max_iter:
         prev_w = w.copy()
-        w -= alpha*df(x, y, w, init_b)
+        w -= alpha*df(x, y, w)
         iter += 1
+        if (iter % 100 == 0):
+            print("iter", iter, "NLL(x)", f(x, y, w))
         if (iter % 1000 == 0):
-            print("iter", iter, "NLL(x)", f(x, y, w, init_b))
+            performance = vstack((performance, w))
     return w
 
 
@@ -137,8 +144,9 @@ def deriv_multilayer(W0, b0, W1, b1, x, L0, L1, y, y_):
     
 # follow the diagram
 # for part 2, W should be 784 x 10. b should be 10 x 1
-def lin_combin(w, b, x):
-    o = (dot(w.T, x) + b)
+def lin_combin(w, x):
+    #o = (dot(w.T, x) + b)
+    o = dot(w.T, x)
     return softmax(o)
 
 

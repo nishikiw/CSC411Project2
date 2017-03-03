@@ -76,7 +76,7 @@ We would like to use the sum of the negative log-probabilities of all the traini
 Compute the gradient of the cost function with respect to the weight $w_{ij}$. Justify every step. You may refer to Slide 7 of the One-Hot Encoding lecture , but note that you need to justify every step there, and that your cost function is the sum over all the training examples.
 
 \paragraph{Answer}
-We could calculate $\frac{\partial p_j}{\partial o_i}$ in two cases:
+When sample size is one, we could calculate $\frac{\partial p_j}{\partial o_i}$ in two cases:
 \begin{enumerate}
 \item If $j = i$,
 \begin{align*}
@@ -113,7 +113,10 @@ For the following equation, let $j$ refers to the input size (number of $x$ per 
 \\
 $X$ is the input matrix with dimension $n \times m$, where $n$ is the number $x$ (related to $j$) and $m$ is the sample size (related to $k$). $P$ is the calculated result matrix after using softmax with dimension $d \times m$, where $d$ is the output size (number of outputs per sample, related to $i$). $Y$ is the expected output with the same dimension as $P$.
 \[\frac{\partial C}{\partial o_{ik}} = p_{ik} - y_{ik}\]
-\[\frac{\partial o_{ik}}{\partial w_{ij}} = x_{jk}\]
+\begin{align*}
+\frac{\partial o_{ik}}{\partial w_{ij}} &= \frac{\partial}{\partial w_{ij}}(w_{i1}x_{1k}+\dots+w_{ij}x_{jk}+\dots+w_{in}x_{nk}+b_{ik})\\
+&=x_{jk}
+\end{align*}
 \begin{align*}
 \frac{\partial C}{\partial w_{ij}} &= \sum_{k}\frac{\partial C}{\partial o_{ik}} \cdot \frac{\partial o_{ik}}{\partial w_{ij}}\\
 &= \sum_{k}x_{jk}(p_{ik} - y_{ik})\\

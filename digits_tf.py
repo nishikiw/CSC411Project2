@@ -10,7 +10,7 @@ from scipy.ndimage import filters
 import urllib
 from numpy import random
 
-import cPickle
+#import cPickle
 
 import os
 from scipy.io import loadmat
@@ -18,7 +18,7 @@ from scipy.io import loadmat
 
 t = int(time.time())
 #t = 1454219613
-print "t=", t
+print ("t=", t)
 random.seed(t)
 
 
@@ -76,11 +76,13 @@ def get_train(M):
     return batch_xs, batch_y_s
         
 
+#iteration, learning rate, lamda
 
-
+# placeholder means the var won't change
 x = tf.placeholder(tf.float32, [None, 784])
 
 
+# variable means the var will be changed
 nhid = 300 # number of hidden units
 W0 = tf.Variable(tf.random_normal([784, nhid], stddev=0.01))
 b0 = tf.Variable(tf.random_normal([nhid], stddev=0.01))
@@ -88,11 +90,13 @@ b0 = tf.Variable(tf.random_normal([nhid], stddev=0.01))
 W1 = tf.Variable(tf.random_normal([nhid, 10], stddev=0.01))
 b1 = tf.Variable(tf.random_normal([10], stddev=0.01))
 
+"""
 snapshot = cPickle.load(open("snapshot50.pkl"))
 W0 = tf.Variable(snapshot["W0"])
 b0 = tf.Variable(snapshot["b0"])
 W1 = tf.Variable(snapshot["W1"])
 b1 = tf.Variable(snapshot["b1"])
+"""
 
 
 layer1 = tf.nn.tanh(tf.matmul(x, W0)+b0)
@@ -110,7 +114,9 @@ reg_NLL = -tf.reduce_sum(y_*tf.log(y))+decay_penalty
 
 train_step = tf.train.AdamOptimizer(0.0005).minimize(reg_NLL)
 
-init = tf.initialize_all_variables()
+#init = tf.initialize_all_variables()
+# will init to random value
+init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
 
@@ -126,17 +132,18 @@ for i in range(5000):
   
   
   if i % 1 == 0:
-    print "i=",i
-    print "Test:", sess.run(accuracy, feed_dict={x: test_x, y_: test_y})
+    print ("i=",i)
+    print ("Test:", sess.run(accuracy, feed_dict={x: test_x, y_: test_y}))
     batch_xs, batch_ys = get_train(M)
 
-    print "Train:", sess.run(accuracy, feed_dict={x: batch_xs, y_: batch_ys})
-    print "Penalty:", sess.run(decay_penalty)
+    print ("Train:", sess.run([accuracy,decay_penalty] feed_dict={x: batch_xs, y_: batch_ys}))
+    #print ("Penalty:", sess.run(decay_penalty))
 
-
+"""
     snapshot = {}
     snapshot["W0"] = sess.run(W0)
     snapshot["W1"] = sess.run(W1)
     snapshot["b0"] = sess.run(b0)
     snapshot["b1"] = sess.run(b1)
     cPickle.dump(snapshot,  open("new_snapshot"+str(i)+".pkl", "w"))
+    """

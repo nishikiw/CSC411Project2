@@ -22,11 +22,12 @@ def main():
     M = loadmat("mnist_all.mat")
     
     # divide all data point by 255.0
-    for digit in range(0,10):
-        train = "train" + str(digit)
-        M[train] = M[train].astype(float)
-        for i in range(0, len(M[train])):
-            M[train][i] = M[train][i]/255.0
+    for set in ["train", "test"]:
+        for digit in range(0,10):
+            set_name = set + str(digit)
+            M[set_name] = M[set_name].astype(float)
+            for i in range(0, len(M[set_name])):
+                M[set_name][i] = M[set_name][i]/255.0
     
     np.random.seed(0)
     #part1(M)
@@ -63,25 +64,63 @@ def part3b(M):
 
 def part4(M):
     """Coding part for part 4."""
+    
+    # set up training set
     if not os.path.exists("x.txt"):
-        x = setup_x(M)
+        x = setup_x(M, "train")
         np.savetxt("x.txt", x)
     else:
         x = loadtxt("x.txt");
-        
     print("x is set up")
     if not os.path.exists("y.txt"):
-        y = setup_y(M)
+        y = setup_y(M, "train")
         np.savetxt("y.txt", y)
     else:
         y = loadtxt("y.txt")
     print("y is set up")
-    w0 = np.random.rand(785, 10)
-    #b = np.zeros(y.shape) # make it same shape as y
+    training_size = int(y.shape[1]) # there are 60000 sample in training set
     
-    w = grad_descent(NLL, NLL_gradient, x, y, w0, 0.00001, 10000)
+    # set up test set
+    if not os.path.exists("x_test.txt"):
+        x_test = setup_x(M, "test")
+        np.savetxt("x_test.txt", x_test)
+    else:
+        x_test = loadtxt("x_test.txt");
+    print("x_test is set up")
+    if not os.path.exists("y_test.txt"):
+        y_test = setup_y(M, "test")
+        np.savetxt("y_test.txt", y_test)
+    else:
+        y_test = loadtxt("y_test.txt")
+    print("y_test is set up")
+    test_size = int(y_test.shape[1]) # there are 10000 sample in test set
     
+    #w0 = np.random.rand(785, 10)
     
+    #w = grad_descent(NLL, NLL_gradient, x, y, w0, 0.00001, 10000)
+    w_list = np.loadtxt("part4_w.txt").reshape((11,785,10))
+    x_axis = [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    train_performance = []
+    test_performance = []
+    for i in range (0, 11):
+        # training set performance
+        acc = check_performance(x, y, w_list[i], training_size)
+        train_performance.append(acc)
+        
+        # test set performance
+        acc_t = check_performance(x_test, y_test, w_list[i], test_size)
+        test_performance.append(acc_t)
+    plt.ylim(0,110)
+    plt.plot(x_axis, train_performance, x_axis, test_performance)
+    plt.savefig("part4.png")
+    
+def check_performance(x, y, w, set_size):
+    x_hat = vstack((ones((1, x.shape[1])), x))
+    y_hat = dot(w.T, x_hat)
+    result = np.argmax(y_hat, axis = 0)
+    correct = set_size - np.count_nonzero(np.argmax(y, axis = 0)-result)
+    acc = correct * 1.0 / set_size * 100
+    return acc
 
 def softmax(y):
     '''Return the output of the softmax function for the matrix of output y. y
@@ -122,7 +161,7 @@ def grad_descent(f, df, x, y, init_w, alpha, max_iter):
     EPS = 1e-10   #EPS = 10**(-10)
     prev_w = init_w-10*EPS
     w = init_w.copy()
-    performance = np.array(w)
+    performance = np.array([w])
     iter = 0
     while norm(w - prev_w) >  EPS and iter < max_iter:
         prev_w = w.copy()
@@ -131,7 +170,9 @@ def grad_descent(f, df, x, y, init_w, alpha, max_iter):
         if (iter % 100 == 0):
             print("iter", iter, "NLL(x)", f(x, y, w))
         if (iter % 1000 == 0):
-            performance = vstack((performance, w))
+            performance = vstack((performance, [w]))
+    print(performance.shape)
+    np.savetxt("part4_w.txt", performance.flatten())
     return w
 
 
@@ -194,24 +235,24 @@ def test_gradient(x, y, b, w):
 # y should be 10 x 5000
 # b should be same as y
 # w should be 784 x 10
-def setup_x(M):
+def setup_x(M, set):
     x = np.zeros((784,), dtype=float) # dummy row. will delete later
     for digit in range(0,10):
-        train = "train" + str(digit)
-        for i in range(0, len(M[train])):
-            x = vstack((x, M[train][i]))
+        set_name = set + str(digit)
+        for i in range(0, len(M[set_name])):
+            x = vstack((x, M[set_name][i]))
     
     x = np.delete(x, (0), axis=0) #delete dummy row
     return x.T
 
 
-def setup_y(M):
+def setup_y(M, set):
     y = np.zeros((10,))
     for digit in range(0,10):
-        train = "train" + str(digit)
+        set_name = set + str(digit)
         z = np.zeros((10,))
         z[digit] = 1
-        for i in range(0, len(M[train])):
+        for i in range(0, len(M[set_name])):
             y = vstack((y, z))
     y = np.delete(y, (0), axis=0)
     return y.T

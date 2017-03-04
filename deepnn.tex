@@ -190,4 +190,43 @@ def NLL_gradient(x, y, w, b):
     return dot(x, (p - y).T)
 \end{lstlisting}
 
+\clearpage
+
+\section*{Part 4}
+\paragraph{Question}
+Train the neural network you constructed. Plot the learning curves. Display the weights going into each of the output units. Describe the details of your optimization procedure.
+
+\clearpage
+
+\section*{Part 5}
+\paragraph{Question}
+The advantage of using multinomial logistic regression (i.e., the network you constructed here) over using linear regression as in Project 1 is that the cost function isn’t overly large when the actual outputs are very far away from the target outputs. That causes the network to not adjust the weights too much because of a single training case that causes the outputs to be very large. You should come up with a dataset where the performance on the test set is better when you use multinomial logistic regression. Do this by generating training and test sets similarly to how we did it in lecture . Show that the performance using multinomial logistic regression (on the test set) is substantially better. Explain what you did and include code to clarify your point. Clearly explain why your experiment illustrates your point.
+
+\clearpage
+
+\section*{Part 6}
+\paragraph{Question}
+Backpropagation can be seen as a way to speed up the computation of the gradient. For a network with $N$ layers each of which contains $K$ neurons, determine how much faster is (fully-vectorized) Backpropagation compared to computing the gradient with respect to each weight individually. Assume that all the layers are fully-connected. Show your work. Make any reasonable assumptions (e.g., about how fast matrix multiplication can be peformed), and state what assumptions you are making.
+
+\paragraph{Answer}
+Notation:
+\begin{itemize}
+\item $h_{iq}$ - $q$\textsuperscript{th} nequron in layer $i$
+\item $w^{i,p,q}$ - weight from $p$\textsuperscript{th} neuron in layer $i-1$ to $q$\textsuperscript{th} neuron in layer $i$
+\item Assume for each neuron $h_{iq}$, $h_{iq} = \sum_p w^{i, p, q}h_{i-1, p}+b_{i, q}$
+\item Assume the model is the same model as earlier parts, so $o_i$s $\rightarrow$ softmax $\rightarrow$ $p_i$s $\rightarrow$ NLL
+\item Assume the model is for one sample in the training set
+\end{itemize}
+\begin{enumerate}
+\item 
+\[\frac{\partial C}{\partial w_{n, p, q}} = \frac{\partial C}{\partial o_q} \cdot \frac{\partial o_q}{\partial w^{n, p, q}} = (p_q \cdot y_q)h_{n-1, p}\]
+\[\nabla_nC = (H_{n-1})^T(P-Y)\]
+where $H$, $P$, and $Y$ are $k \times 1$ vectors.
+\item 
+\[\frac{\partial C}{\partial h_{n-1, q}} = \sum_i \frac{\partial C}{\partial o_i} \cdot \frac{\partial o_i}{\partial h_{n-1, q}} = \sum_i \frac{\partial C}{\partial o_i} \cdot w^{n, q, i}\]
+Then, 
+\[\frac{\partial C}{\partial h_{n-1}} = W^n \cdot \frac{\partial C}{\partial O}\]
+where $W^n$ is a $k \times k$ matrix and $\frac{\partial C}{\partial O}$ is a $k \times 1$ vector.
+\item \[\frac{\partial C}{\partial w^{n-1, p, q}} = \frac{\partial C}{\partial h_{n-1, q}} \cdot \frac{\partial h_{n-1, q}}{\partial w^{n-1, p, q}} = \frac{\partial C}{\partial h_{n-1, q}} \cdot h_{n-2, p}\]
+\end{enumerate}
 \end{document}

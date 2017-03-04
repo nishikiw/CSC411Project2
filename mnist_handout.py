@@ -9,6 +9,7 @@ import matplotlib.image as mpimg
 from scipy.ndimage import filters
 import urllib
 import os
+import math
 
 import cPickle
 
@@ -72,6 +73,7 @@ def part4(M):
     else:
         x = loadtxt("x.txt");
     print("x is set up")
+    
     if not os.path.exists("y.txt"):
         y = setup_y(M, "train")
         np.savetxt("y.txt", y)
@@ -87,6 +89,7 @@ def part4(M):
     else:
         x_test = loadtxt("x_test.txt");
     print("x_test is set up")
+    
     if not os.path.exists("y_test.txt"):
         y_test = setup_y(M, "test")
         np.savetxt("y_test.txt", y_test)
@@ -95,11 +98,14 @@ def part4(M):
     print("y_test is set up")
     test_size = int(y_test.shape[1]) # there are 10000 sample in test set
     
-    #w0 = np.random.rand(785, 10)
-    
-    #w = grad_descent(NLL, NLL_gradient, x, y, w0, 0.00001, 10000)
-    w_list = np.loadtxt("part4_w.txt").reshape((11,785,10))
-    x_axis = [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+    w0 = np.random.normal(0.0, 1.0, (x.shape[0]+1, y.shape[0]))/math.sqrt(x.shape[0] * y.shape[0])
+    alpha = 0.00001;
+    max_iter = 5000;
+    # Run gradient descent if haven't done yet
+    if not os.path.exists("part4_w.txt"):
+        w = grad_descent(NLL, NLL_gradient, x, y, w0, alpha, max_iter)
+    w_list = np.loadtxt("part4_w.txt").reshape((11,x.shape[0]+1,y.shape[0]))
+    x_axis = [0,500,1000,1500,2000,2500,3000,3500,4000,4500,5000]
     train_performance = []
     test_performance = []
     for i in range (0, 11):
@@ -111,7 +117,9 @@ def part4(M):
         acc_t = check_performance(x_test, y_test, w_list[i], test_size)
         test_performance.append(acc_t)
     plt.ylim(0,110)
-    plt.plot(x_axis, train_performance, x_axis, test_performance)
+    plt.plot(x_axis, train_performance, label="training")
+    plt.plot(x_axis, test_performance, label="validation")
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
     plt.savefig("part4.png")
     
 def check_performance(x, y, w, set_size):
@@ -161,18 +169,17 @@ def grad_descent(f, df, x, y, init_w, alpha, max_iter):
     EPS = 1e-10   #EPS = 10**(-10)
     prev_w = init_w-10*EPS
     w = init_w.copy()
-    performance = np.array([w])
     iter = 0
+    ws = np.array([w])
     while norm(w - prev_w) >  EPS and iter < max_iter:
         prev_w = w.copy()
         w -= alpha*df(x, y, w)
         iter += 1
         if (iter % 100 == 0):
             print("iter", iter, "NLL(x)", f(x, y, w))
-        if (iter % 1000 == 0):
-            performance = vstack((performance, [w]))
-    print(performance.shape)
-    np.savetxt("part4_w.txt", performance.flatten())
+        if (iter % 500 == 0):
+            ws = vstack((ws, [w]))
+    np.savetxt("part4_w.txt", ws.flatten())
     return w
 
 

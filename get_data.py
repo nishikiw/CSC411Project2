@@ -59,7 +59,7 @@ def download_image(actor_list):
     create_dir("cropped")
     create_dir("uncropped")
     
-    testfile = urllib.request.URLopener()
+    testfile = urllib.URLopener()
     faces_files = ["facescrub_actors.txt", "facescrub_actresses.txt"]
     for face_file in faces_files:
         for a in actor_list:
@@ -74,20 +74,25 @@ def download_image(actor_list):
                     else:
                         try:
                             # check the hash of the files
-                            file = open("uncropped/" + filename)
-                            if (hashlib.sha256(file).hexdigest() != line.split()[6]):
-                                continue
-                            im = Image.open("uncropped/"+filename)
-                            box = (line.split()[5])
-                            x1 = int(box.split(",")[0])
-                            y1 = int(box.split(",")[1])
-                            x2 = int(box.split(",")[2])
-                            y2 = int(box.split(",")[3])
-                            crop_border = (x1,y1,x2,y2)
-                            im2 = im.crop(crop_border)
-                            im3 = imresize(im2, (32, 32))
-                            im4 = rgb2gray(im3)
-                            imsave("cropped/" + filename, im4)
+                            file = open("uncropped/" + filename, "rb")
+                            print(filename)
+                            hashcode = line.split()[6]
+                            imagecode = hashlib.sha256(file.read()).hexdigest()
+                            if (imagecode != hashcode):
+                                print("Hash Error")
+                            else:
+                                im = Image.open("uncropped/"+filename)
+                                box = (line.split()[5])
+                                x1 = int(box.split(",")[0])
+                                y1 = int(box.split(",")[1])
+                                x2 = int(box.split(",")[2])
+                                y2 = int(box.split(",")[3])
+                                crop_border = (x1,y1,x2,y2)
+                                im2 = im.crop(crop_border)
+                                im3 = imresize(im2, (32, 32))
+                                im4 = rgb2gray(im3)
+                                imsave("cropped/" + filename, im4)
+                            file.close()
                         except:
                             pass
                     i += 1

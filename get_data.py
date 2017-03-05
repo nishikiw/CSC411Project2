@@ -97,3 +97,31 @@ def download_image(actor_list):
                             pass
                     i += 1
     print("Finished downloading!")
+    
+def split_set(act, train_size, val_size, test_size):
+    create_dir("part7_training")
+    create_dir("part7_validation")
+    create_dir("part7_test")
+    for a in act:
+        used_image = []
+        name = a.split()[1].lower()
+        split_one_set(name, train_size, "part7_training", used_image)
+        split_one_set(name, val_size, "part7_validation", used_image)
+        split_one_set(name, test_size, "part7_test", used_image)
+    print("Finished splitting!")
+        
+
+def split_one_set(name, size, dest_file, used_image_no):
+    counter = 0
+    while (counter < size):
+        r = random.randint(1, 200)
+        if r in used_image_no:
+            continue
+        filename = name+str(r)+'.'+'jpg'
+        try:
+            im = imread("cropped/"+filename)
+            imsave(dest_file+"/"+filename, im)
+            used_image_no.append(r)
+            counter += 1
+        except:
+            pass

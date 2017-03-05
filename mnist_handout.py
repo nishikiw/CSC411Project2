@@ -128,7 +128,7 @@ def part4(M):
     img_side = int(sqrt(x.shape[0]))
     for i in range(0, y.shape[0]):
         w_img = w_list[10][1:, i].reshape((img_side, img_side))
-        imsave("w"+str(i)+".jpg", w_img)
+        imsave("w"+str(i)+".jpg", w_img, cmap = cm.gray)
     
     
 def check_performance(x, y, w, set_size):

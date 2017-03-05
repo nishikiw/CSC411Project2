@@ -120,7 +120,16 @@ def part4(M):
     plt.plot(x_axis, train_performance, label="training")
     plt.plot(x_axis, test_performance, label="validation")
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
+    plt.xlabel('Iteration')
+    plt.ylabel('Correctness(%)')
     plt.savefig("part4.png")
+    
+    # Show the image of w for each digit.
+    img_side = int(sqrt(x.shape[0]))
+    for i in range(0, y.shape[0]):
+        w_img = w_list[10][1:, i].reshape((img_side, img_side))
+        imsave("w"+str(i)+".jpg", w_img)
+    
     
 def check_performance(x, y, w, set_size):
     x_hat = vstack((ones((1, x.shape[1])), x))

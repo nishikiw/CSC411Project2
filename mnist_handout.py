@@ -98,7 +98,8 @@ def part4(M):
     print("y_test is set up")
     test_size = int(y_test.shape[1]) # there are 10000 sample in test set
     
-    w0 = np.random.normal(0.0, 1.0, (x.shape[0]+1, y.shape[0]))/math.sqrt(x.shape[0] * y.shape[0])
+    w0 = np.random.normal(0.0, 1.0, (x.shape[0]+1, y.shape[0]))/math.sqrt((x.shape[0]+1) * y.shape[0])
+    exit()
     alpha = 0.00001;
     max_iter = 5000;
     # Run gradient descent if haven't done yet
@@ -127,10 +128,10 @@ def part4(M):
     # Show the image of w for each digit.
     img_side = int(sqrt(x.shape[0]))
     for i in range(0, y.shape[0]):
-        w_img = w_list[10][1:, i].reshape((img_side, img_side))
+        w_img = w_list[1][1:, i].reshape((img_side, img_side))
         imsave("w"+str(i)+".jpg", w_img, cmap = cm.gray)
-    
-    
+
+
 def check_performance(x, y, w, set_size):
     x_hat = vstack((ones((1, x.shape[1])), x))
     y_hat = dot(w.T, x_hat)

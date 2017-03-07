@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6100 64-bit) (preloaded format=pdflatex 2016.12.4)  3 MAR 2017 23:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (MiKTeX 2.9.6100 64-bit) (preloaded format=pdflatex 2016.12.4)  5 MAR 2017 18:24
 entering extended mode
 **./deepnn.tex
 (deepnn.tex
@@ -462,25 +462,91 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 185.
- [6] [7
+ [6]
+<part4.png, id=37, 578.16pt x 433.62pt>
+File: part4.png Graphic file (type png)
+ <use part4.png>
+Package pdftex.def Info: part4.png used on input line 203.
+(pdftex.def)             Requested size: 462.52863pt x 346.89647pt.
 
-]
+<w0.jpg, id=38, 28.105pt x 28.105pt>
+File: w0.jpg Graphic file (type jpg)
+ <use w0.jpg>
+Package pdftex.def Info: w0.jpg used on input line 211.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w1.jpg, id=39, 28.105pt x 28.105pt>
+File: w1.jpg Graphic file (type jpg)
+ <use w1.jpg>
+Package pdftex.def Info: w1.jpg used on input line 216.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w2.jpg, id=40, 28.105pt x 28.105pt>
+File: w2.jpg Graphic file (type jpg)
+ <use w2.jpg>
+Package pdftex.def Info: w2.jpg used on input line 221.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w3.jpg, id=41, 28.105pt x 28.105pt>
+File: w3.jpg Graphic file (type jpg)
+ <use w3.jpg>
+Package pdftex.def Info: w3.jpg used on input line 226.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w4.jpg, id=42, 28.105pt x 28.105pt>
+File: w4.jpg Graphic file (type jpg)
+ <use w4.jpg>
+Package pdftex.def Info: w4.jpg used on input line 231.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w5.jpg, id=43, 28.105pt x 28.105pt>
+File: w5.jpg Graphic file (type jpg)
+ <use w5.jpg>
+Package pdftex.def Info: w5.jpg used on input line 236.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w6.jpg, id=44, 28.105pt x 28.105pt>
+File: w6.jpg Graphic file (type jpg)
+ <use w6.jpg>
+Package pdftex.def Info: w6.jpg used on input line 241.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w7.jpg, id=45, 28.105pt x 28.105pt>
+File: w7.jpg Graphic file (type jpg)
+ <use w7.jpg>
+Package pdftex.def Info: w7.jpg used on input line 246.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w8.jpg, id=46, 28.105pt x 28.105pt>
+File: w8.jpg Graphic file (type jpg)
+ <use w8.jpg>
+Package pdftex.def Info: w8.jpg used on input line 251.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+
+<w9.jpg, id=47, 28.105pt x 28.105pt>
+File: w9.jpg Graphic file (type jpg)
+ <use w9.jpg>
+Package pdftex.def Info: w9.jpg used on input line 256.
+(pdftex.def)             Requested size: 28.10492pt x 28.10492pt.
+ [7
+
+ <./part4.png> <./w0.jpg> <./w1.jpg> <./w2.jpg> <./w3.jpg> <./w4.jpg> <./w5.jpg
+> <./w6.jpg> <./w7.jpg> <./w8.jpg> <./w9.jpg>]
 Missing character: There is no â in font cmr10!
 Missing character: There is no € in font cmr10!
 Missing character: There is no ™ in font cmr10!
  [8
 
-]
-
+] 
 AED: lastpage setting LastPage
 [9
 
 ] (deepnn.aux) ) 
 Here is how much of TeX's memory you used:
- 6661 strings out of 493333
- 97889 string characters out of 3139182
+ 6723 strings out of 493333
+ 98568 string characters out of 3139182
  303132 words of memory out of 3000000
- 10082 multiletter control sequences out of 15000+200000
+ 10132 multiletter control sequences out of 15000+200000
  11698 words of font info for 44 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  42i,9n,43p,864b,1496s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -496,9 +562,9 @@ onts/cm/cmr17.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
 mr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
 <C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Progr
 am Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on deepnn.pdf (9 pages, 326709 bytes).
+Output written on deepnn.pdf (9 pages, 365143 bytes).
 PDF statistics:
- 88 PDF objects out of 1000 (max. 8388607)
+ 100 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 66 words of extra memory for PDF output out of 10000 (max. 10000000)
 

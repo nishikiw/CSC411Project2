@@ -27,14 +27,11 @@ However, I didn't get to test the find the best parameters to the network/play
 around with the network setting. If you have time, maybe you can try running
 the network with different parameters?
 Here is a list of all the parameters that you can change:
-line 94: distribution of number of data in training/test/val
-line 106: number of hidden units
-line 133: lamda. Used for regularization (in part 8)
-line 152: number of iterations
-line 153: number of data in the mini-batch
-
-Remember to uncomment line 94 when you are running the first time so the dataset
-is splitted properply
+-distribution of number of data in training/test/val
+-number of hidden units
+-lamda. Used for regularization (in part 8)
+-number of iterations
+-number of data in the mini-batch
 """
 
 np.random.seed(0)
@@ -101,24 +98,22 @@ Set up architecture of the network
 # placeholder means the var won't change during runtime
 x = tf.placeholder(tf.float32, [None, 1024])
 
-
 # variable means the var will be changed during runtime
-nhid = 300 # number of hidden units
+nhid = 200 # number of hidden units
+
+"""
 W0 = tf.Variable(tf.random_normal([1024, nhid], stddev=0.01))
 b0 = tf.Variable(tf.random_normal([nhid], stddev=0.01))
 
 W1 = tf.Variable(tf.random_normal([nhid, 6], stddev=0.01))
 b1 = tf.Variable(tf.random_normal([6], stddev=0.01))
+"""
 
-"""
-TODO delete
-cPickle is just used to load a saved data, just like np.savetxt/loadtxt
-snapshot = cPickle.load(open("snapshot50.pkl"))
-W0 = tf.Variable(snapshot["W0"])
-b0 = tf.Variable(snapshot["b0"])
-W1 = tf.Variable(snapshot["W1"])
-b1 = tf.Variable(snapshot["b1"])
-"""
+W0 = tf.Variable(np.random.normal(0.0, 1.0, (1024, nhid)).astype(float32)/math.sqrt(1024 * nhid))
+b0 = tf.Variable(np.random.normal(0.0, 1.0, (nhid)).astype(float32)/math.sqrt(nhid))
+
+W1 = tf.Variable(np.random.normal(0.0, 1.0, (nhid, 6)).astype(float32)/math.sqrt(6 * nhid))
+b1 = tf.Variable(np.random.normal(0.0, 1.0, (6)).astype(float32)/math.sqrt(6))
 
 layer1 = tf.nn.tanh(tf.matmul(x, W0)+b0)
 layer2 = tf.matmul(layer1, W1)+b1
@@ -130,7 +125,7 @@ y_ = tf.placeholder(tf.float32, [None, 6])
 # regularization/penalty
 # according to class, weight penalty is used when the network is overfitting
 # to create overfitting in this current architecture, can increase number of neurons (nhid)?
-lam = 0.00000 # right now lamda is set to 0. Need to change it for part 8?
+lam = 0.0000 # right now lamda is set to 0. Need to change it for part 8?
 decay_penalty =lam*tf.reduce_sum(tf.square(W0))+lam*tf.reduce_sum(tf.square(W1))
 reg_NLL = -tf.reduce_sum(y_*tf.log(y))+decay_penalty
 
@@ -147,33 +142,21 @@ sess.run(init)
 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 x_test, y_test = get_whole_set(act, "part7_test")
+x_val, y_val = get_whole_set(act, "part7_validation")
 
 
-for i in range(5000):
-  batch_xs, batch_ys = get_train_batch(act, 60) # <-change size of mini batch here. Max is 75 for now
+for i in range(30000):
+  batch_xs, batch_ys = get_train_batch(act, 30) # <-change size of mini batch here. Max is 75 for now
   sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
   
   
-  if i % 100 == 0:
+  if i % 500 == 0:
     print ("i=",i)
-    print ("Test:", sess.run(accuracy, feed_dict={x: x_test, y_: y_test}))
-    
-    x_val, y_val = get_whole_set(act, "part7_validation")
-    print ("Validation:", sess.run(accuracy,feed_dict={x: x_val, y_: y_val}))
-
     
     batch_xs, batch_ys = get_whole_set(act, "part7_training")
     print ("Train:", sess.run(accuracy,feed_dict={x: batch_xs, y_: batch_ys}))
-    print ("Penalty:", sess.run(decay_penalty))
-
-    """
-    TODO delete
-    This is used to save the W's and b's just like np.savetxt
-    snapshot = {}
-    snapshot["W0"] = sess.run(W0)
-    snapshot["W1"] = sess.run(W1)
-    snapshot["b0"] = sess.run(b0)
-    snapshot["b1"] = sess.run(b1)
-    cPickle.dump(snapshot,  open("new_snapshot"+str(i)+".pkl", "w"))
-    """
     
+    print ("Test:", sess.run(accuracy, feed_dict={x: x_test, y_: y_test}))
+    print ("Validation:", sess.run(accuracy,feed_dict={x: x_val, y_: y_val}))
+
+    print ("Penalty:", sess.run(decay_penalty))

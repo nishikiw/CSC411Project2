@@ -293,5 +293,15 @@ Then,
 \[\frac{\partial C}{\partial h_{n-1}} = W^n \cdot \frac{\partial C}{\partial O}\]
 where $W^n$ is a $k \times k$ matrix and $\frac{\partial C}{\partial O}$ is a $k \times 1$ vector.
 \item \[\frac{\partial C}{\partial w^{n-1, p, q}} = \frac{\partial C}{\partial h_{n-1, q}} \cdot \frac{\partial h_{n-1, q}}{\partial w^{n-1, p, q}} = \frac{\partial C}{\partial h_{n-1, q}} \cdot h_{n-2, p}\]
+\[\nabla_{n-1}C = (\frac{\partial C}{\partial H_{n-1}})^T \cdot H_{n-2}\]
+where $\frac{\partial C}{\partial H_{n-1}}$ and $H_{n-2}$ are $k \times 1$ vectors.
+\item \[\frac{\partial C}{\partial h_{n-2}, q} = \sum_i \frac{\partial C}{\partial h_{n-1, i}} \cdot \frac{\partial h_{n-1, i}}{\partial h_{n-2, q}} = \sum_i \frac{\partial C}{\partial h_{n-1, i}} \cdot w^{n-1, q, i}\]
+\[\nabla_{n-2} C = (\frac{\partial C}{\partial H_{n-1}})^T \cdot H_{n-3}\]
 \end{enumerate}
+In conclusion, for layer $i$:
+\[\frac{\partial C}{\partial H_i} =  W^{i+1} \cdot \frac{\partial C}{\partial H_{i+1}}\]
+which have $k^2$ multiplication.
+\[\nabla_i C = \frac{\partial C}{\partial H_i} \cdot H_{i-1}\]
+which have $k$ multiplication.
+So for $n-1$ layers, we have $k^2(n-1)$ multiplications, and $n$ gradient calculation takes $kn$ multiplications. The runtime for backpropagation is polynomial. If we don't use backpropagation and any storage method, for layer $i$, we need to recalculate layer the derivative at layer $i+1$, the runtime is exponential. Therefore, backpropagation speed up the computation of the gradient.
 \end{document}

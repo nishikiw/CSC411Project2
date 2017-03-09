@@ -7,10 +7,11 @@ ws = []
 
 def main():
     theta = array([-3, 1.5])
-    N = 50
-    outliers = 5
+    N = 50          # Training set size - number of outliers
+    N_test = 30     # Test set size
+    outliers = 5    # Outliers in training set
     sigma = 100
-    gen_lin_data_1d(theta, N, outliers, sigma)
+    gen_lin_data_1d(theta, N, outliers, N_test, sigma)
 
 
 def f_project1(x, y, theta):
@@ -94,12 +95,12 @@ def test_performance(x, theta, y):
         if y[argmax(result[:, i]), i] == 1:
             correct += 1
     return correct * 100 / y.shape[1]
+    
 
-
-def gen_lin_data_1d(theta, N, outliers, sigma):
+def gen_lin_data_1d(theta, N, outliers, N_test, sigma):
 
     # Generate data set.
-    # General data
+    # General training data
     random.seed(0)
     x1_general = 100*(random.random((N))-.5)
     random.seed(1)
@@ -142,7 +143,7 @@ def gen_lin_data_1d(theta, N, outliers, sigma):
     
     figure(1)
     # Plot actual data
-    scatter(x1, x2, s=1, color=colors, label="data set")
+    scatter(x1, x2, s=1, color=colors, label="training set")
     
     # Plot the boundary of two classes.
     axhline(y=0, color='k', label="boundary")
@@ -150,7 +151,7 @@ def gen_lin_data_1d(theta, N, outliers, sigma):
     legend(loc = 'upper center')
     xlim([-200, 200])
     ylim([-200, 200])
-    savefig("part5_data.png")
+    savefig("part5_training_data.png")
     
     random.seed(5)
     init_t = random.normal(0.0, 1.0, (x.shape[0]+1, y.shape[0]))/math.sqrt((x.shape[0]+1) * y.shape[0])
@@ -159,8 +160,6 @@ def gen_lin_data_1d(theta, N, outliers, sigma):
     
     # Using project 1's model (linear regression) to test performance on dataset.
     theta_p1 = grad_descent(f_project1, df_project1, x, y, init_t, alpha1, max_iter)
-    performance_p1 = test_performance(x, theta_p1, y)
-    print("Project 1 performance is "+str(performance_p1)+"%")
     
     project1_performance = []
     # Plot project 1 performance
@@ -171,8 +170,6 @@ def gen_lin_data_1d(theta, N, outliers, sigma):
     # Using project 2's model (logistic regression) to test performance on dataset.
     alpha2 = 1e-3
     theta_p2 = grad_descent(f_project2, df_project2, x, y, init_t, alpha2, max_iter)
-    performance_p2 = test_performance(x, theta_p2, y)
-    print("Project 2 performance is "+str(performance_p2)+"%")
     
     project2_performance = []
     # Plot project 2 performance
@@ -191,7 +188,53 @@ def gen_lin_data_1d(theta, N, outliers, sigma):
     legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
     xlabel('Iteration')
     ylabel('Correctness(%)')
-    savefig('part5_performance.png')
+    savefig('part5_learning_curve.png')
+    
+    
+    # Test performance
+    random.seed(6)
+    x1_test = 400*(random.random((N_test))-.5)
+    random.seed(7)
+    x2_test = 400*(random.random((N_test))-.5)
+    
+    # Set x
+    x_test = vstack((x1_test, x2_test))
+    
+    # Set y
+    colors_test = array([])
+    y_test = zeros((2, len(x1_test)))
+    for i in range(0, len(x1_test)):
+        if x2_test[i] > 0:
+            y_test[0, i] = 1
+            y_test[1, i] = 0
+            if len(colors_test) == 0:
+                colors_test = color1
+            else:
+                colors_test = vstack((colors_test, color1))
+        else:
+            y_test[0, i] = 0
+            y_test[1, i] = 1
+            if len(colors_test) == 0:
+                colors_test = color2
+            else:
+                colors_test = vstack((colors_test, color2))
+            
+    performance_p1 = test_performance(x_test, theta_p1, y_test)
+    print("Project 1 performance is "+str(performance_p1)+"%")
+    performance_p2 = test_performance(x_test, theta_p2, y_test)
+    print("Project 2 performance is "+str(performance_p2)+"%")
+    
+    figure(3)
+    # Plot test data
+    scatter(x1_test, x2_test, s=1, color=colors_test, label="test set")
+    
+    # Plot the boundary of two classes.
+    axhline(y=0, color='k', label="boundary")
+    
+    legend(loc = 'upper center')
+    xlim([-200, 200])
+    ylim([-200, 200])
+    savefig("part5_test_data.png")
     
 
 if __name__ == '__main__':

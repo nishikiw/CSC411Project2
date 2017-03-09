@@ -119,7 +119,7 @@ def part4(M):
         test_performance.append(acc_t)
     plt.ylim(0,110)
     plt.plot(x_axis, train_performance, label="training")
-    plt.plot(x_axis, test_performance, label="validation")
+    plt.plot(x_axis, test_performance, label="test")
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
     plt.xlabel('Iteration')
     plt.ylabel('Correctness(%)')

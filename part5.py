@@ -3,12 +3,14 @@ from matplotlib.pyplot import *
 from numpy.linalg import norm
 import scipy.stats
 
+ws = []
 
 def main():
     theta = array([-3, 1.5])
     N = 50
+    outliers = 5
     sigma = 100
-    gen_lin_data_1d(theta, N, sigma)
+    gen_lin_data_1d(theta, N, outliers, sigma)
 
 
 def f_project1(x, y, theta):
@@ -55,17 +57,22 @@ def grad_descent(f, df, x, y, init_t, alpha, max_iter):
     http://www.cs.toronto.edu/~guerzhoy/411/lec/W02/python/linreg.html
     """
     
+    global ws
+    ws = []
+    
     EPS = 1e-8   #EPS = 10**(-8)
     prev_t = init_t-10*EPS
     t = init_t.copy()
     iter  = 0
-    while norm(t - prev_t) >  EPS and iter < max_iter:
+    while norm(t - prev_t) >  EPS and iter <= max_iter:
         prev_t = t.copy()
         t -= alpha*df(x, y, t)
         # if iter % 500 == 0:
         #     print "Iter", iter
         #     print "f(x) = %.2f" % (f(x, y, t))
         #     print "Gradient: ", df(x, y, t), "\n"
+        if iter % 1000 == 0:
+            ws.append(t.copy())
         iter += 1
     return t
 
@@ -89,109 +96,102 @@ def test_performance(x, theta, y):
     return correct * 100 / y.shape[1]
 
 
-def gen_lin_data_1d(theta, N, sigma):
+def gen_lin_data_1d(theta, N, outliers, sigma):
 
-    #####################################################
-    # Actual data
-    #random.seed(0)
-    x1_raw = 100*(random.random((N))-.5)
-    #random.seed(1)
-    x2_raw = 100*(random.random((N))-.5)
+    # Generate data set.
+    # General data
+    random.seed(0)
+    x1_general = 100*(random.random((N))-.5)
+    random.seed(1)
+    x2_general = 100*(random.random((N))-.5)
     
-    # x1_test = vstack((    ones_like(x1_raw),
-    #                 x1_raw,
-    #                 ))
-                    
-    #x2_raw = dot(theta, x1_test) + scipy.stats.norm.rvs(scale= sigma,size=N)
-    x = vstack((x1_raw, x2_raw))
+    # Outliers
+    random.seed(2)
+    x1_outlier = 100+100*random.random((outliers))
+    random.seed(3)
+    x2_outlier = 100+100*random.random((outliers))
     
-    y = zeros((4, len(x1_raw)))
+    x1 = concatenate((x1_general, x1_outlier))
+    x2 = concatenate((x2_general, x2_outlier))
+    
+    # Set x
+    x = vstack((x1, x2))
+    
+    # Set y
+    y = zeros((2, len(x1)))
     colors = array([])
     color1 = array([1., 0., 0., 1])
     color2 = array([0., 1., 0., 1])
-    color3 = array([0., 0., 1., 1])
-    color4 = array([1., 1., 1., 1])
     
-    # Get y.
-    for i in range(0, len(x1_raw)):
-        if x2_raw[i] > 0:
-            if x1_raw[i] > 0:
-                y[0, i] = 1
-                y[1, i] = 0
-                y[2, i] = 0
-                y[3, i] = 0
-                if len(colors) == 0:
-                    colors = color1
-                else:
-                    colors = vstack((colors, color1))
+    # Get y: if x2 is above x-axis, y is class 1. Else, y is class 2.
+    for i in range(0, len(x1)):
+        if x2[i] > 0:
+            y[0, i] = 1
+            y[1, i] = 0
+            if len(colors) == 0:
+                colors = color1
             else:
-                y[0, i] = 0
-                y[1, i] = 1
-                y[2, i] = 0
-                y[3, i] = 0
-                if len(colors) == 0:
-                    colors = color2
-                else:
-                    colors = vstack((colors, color2))
+                colors = vstack((colors, color1))
         else:
-            if x1_raw[i] > 0:
-                y[0, i] = 0
-                y[1, i] = 0
-                y[2, i] = 1
-                y[3, i] = 0
-                if len(colors) == 0:
-                    colors = color3
-                else:
-                    colors = vstack((colors, color3))
+            y[0, i] = 0
+            y[1, i] = 1
+            if len(colors) == 0:
+                colors = color2
             else:
-                y[0, i] = 0
-                y[1, i] = 0
-                y[2, i] = 0
-                y[3, i] = 1
-                if len(colors) == 0:
-                    colors = color4
-                else:
-                    colors = vstack((colors, color4))
-    #y = dot(theta, x) + scipy.stats.norm.rvs(scale= sigma,size=N)
+                colors = vstack((colors, color2))        
     
+    figure(1)
+    # Plot actual data
+    scatter(x1, x2, s=1, color=colors, label="data set")
     
+    # Plot the boundary of two classes.
+    axhline(y=0, color='k', label="boundary")
     
-    scatter(x1_raw, x2_raw, c=colors)
-    #####################################################
-    # Actual generating process
-    #
-    #plot_line(theta, -70, 70, "b", "boundary")
+    legend(loc = 'upper center')
+    xlim([-200, 200])
+    ylim([-200, 200])
+    savefig("part5_data.png")
     
-    # Plot axis.
-    axhline(y=0, color='k', label = "x")
-    axvline(x=0, color='k', label="y")
-    
-    #######################################################
-    # Least squares solution
-    #
-    
-    #theta_hat = dot(linalg.inv(dot(x, x.T)), dot(x, y.T))
-    #plot_line(theta_hat, -70, 70, "g", "Maximum Likelihood Solution")
-    
-    #random.seed(1)
+    random.seed(5)
     init_t = random.normal(0.0, 1.0, (x.shape[0]+1, y.shape[0]))/math.sqrt((x.shape[0]+1) * y.shape[0])
     max_iter = 30000
-    alpha1 = 1e-5
+    alpha1 = 1e-6
+    
+    # Using project 1's model (linear regression) to test performance on dataset.
     theta_p1 = grad_descent(f_project1, df_project1, x, y, init_t, alpha1, max_iter)
     performance_p1 = test_performance(x, theta_p1, y)
     print("Project 1 performance is "+str(performance_p1)+"%")
     
-    alpha2 = 1e-5
+    project1_performance = []
+    # Plot project 1 performance
+    for i in range (0, len(ws)):
+        acc = test_performance(x, ws[i], y)
+        project1_performance.append(acc)
+    
+    # Using project 2's model (logistic regression) to test performance on dataset.
+    alpha2 = 1e-3
     theta_p2 = grad_descent(f_project2, df_project2, x, y, init_t, alpha2, max_iter)
     performance_p2 = test_performance(x, theta_p2, y)
     print("Project 2 performance is "+str(performance_p2)+"%")
     
+    project2_performance = []
+    # Plot project 2 performance
+    for i in range (0, len(ws)):
+        acc = test_performance(x, ws[i], y)
+        project2_performance.append(acc)
+    
+    x_axis = []
+    for i in range(0, 30001, 1000):
+        x_axis.append(i)
         
-
-    legend(loc = 1)
-    xlim([-70, 70])
-    ylim([-100, 100])
-    savefig("part5.png")
+    figure(2)
+    ylim(0,110)
+    plot(x_axis, project1_performance, label="linear regression")
+    plot(x_axis, project2_performance, label="logistic regression")
+    legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
+    xlabel('Iteration')
+    ylabel('Correctness(%)')
+    savefig('part5_performance.png')
     
 
 if __name__ == '__main__':

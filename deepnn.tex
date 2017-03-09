@@ -267,6 +267,22 @@ We used gradient descent to train our network. Using the cost function and its g
 \paragraph{Question}
 The advantage of using multinomial logistic regression (i.e., the network you constructed here) over using linear regression as in Project 1 is that the cost function isn’t overly large when the actual outputs are very far away from the target outputs. That causes the network to not adjust the weights too much because of a single training case that causes the outputs to be very large. You should come up with a dataset where the performance on the test set is better when you use multinomial logistic regression. Do this by generating training and test sets similarly to how we did it in lecture . Show that the performance using multinomial logistic regression (on the test set) is substantially better. Explain what you did and include code to clarify your point. Clearly explain why your experiment illustrates your point.
 
+\paragraph{Answer}
+The dataset we came up is as below.
+\begin{figure*}[h]
+	\centering
+	\includegraphics[scale=0.8]{part5_data.png}
+	\caption*{Dataset}
+\end{figure*}
+We generated 50 generate samples in range $[-100, 100]$, and 5 outliers in range[100, 200] for both $x1$ and $x2$ (a sampe is $(x1, x2)$). The samples are classified into 2 classes. The samples above x-axis are classifies as Class 1 (the red points in graph), and others are classified as Class 2 (the green points in graph).\\
+Since the output of logistic regression in within range of $(0, 1)$ and the output of linear regression is not limited, linear regression could not deal with outliers in data as good as logistic regression. In order to keep the cost small, my initial alpha of gradient descent for linear regression is $10^{-6}$, which is much smaller than my initial alpha for logistic regression (that is $10^{-3}$). The performance of linear regression and logistic regression on the dataset over iterations is shown below.
+\begin{figure*}[h]
+	\centering
+	\includegraphics[scale=0.8]{part5_performance.png}
+	\caption*{Performance of Linear Regression and Logistic Regression on Dataset}
+\end{figure*}
+From the figure we could see that logistic Regression gets to the minimum cost much faster than linear regression, and have better performance at the end.
+
 \clearpage
 
 \section*{Part 6}
@@ -274,6 +290,7 @@ The advantage of using multinomial logistic regression (i.e., the network you co
 Backpropagation can be seen as a way to speed up the computation of the gradient. For a network with $N$ layers each of which contains $K$ neurons, determine how much faster is (fully-vectorized) Backpropagation compared to computing the gradient with respect to each weight individually. Assume that all the layers are fully-connected. Show your work. Make any reasonable assumptions (e.g., about how fast matrix multiplication can be peformed), and state what assumptions you are making.
 
 \paragraph{Answer}
+
 Notation:
 \begin{itemize}
 \item $h_{iq}$ - $q$\textsuperscript{th} nequron in layer $i$

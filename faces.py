@@ -77,12 +77,14 @@ def get_whole_set(act, file):
 
 
 # download, and split dataset
-"""
-download_image(act)
 
-split_set(act, 75, 15, 30) # training, val, test
-"""
+if not os.path.exists("cropped"):
+    print("Downloading images")
+    download_image(act)
 
+if not os.path.exists("part7_test"):
+    print("Set up training, validation and test set")
+    split_set(act, 75, 15, 30) # training, val, test
 
 """
 Set up architecture of the network

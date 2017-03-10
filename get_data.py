@@ -13,6 +13,8 @@ from scipy.ndimage import filters
 import urllib
 from PIL import Image
 import hashlib
+import re
+from shutil import copy
 
 def create_dir(dir_name):
     if not os.path.exists(dir_name):
@@ -97,31 +99,32 @@ def download_image(actor_list):
                             pass
                     i += 1
     print("Finished downloading!")
-    
+
+
 def split_set(act, train_size, val_size, test_size):
     create_dir("part7_training")
     create_dir("part7_validation")
     create_dir("part7_test")
-    for a in act:
-        used_image = []
-        name = a.split()[1].lower()
-        split_one_set(name, train_size, "part7_training", used_image)
-        split_one_set(name, val_size, "part7_validation", used_image)
-        split_one_set(name, test_size, "part7_test", used_image)
-    print("Finished splitting!")
-        
+    dict = build_act_dict()
+    for name in act:
+        lastname = name.split()[1].lower()
+        np.random.seed(0)
+        set = np.random.choice(dict[lastname], train_size+val_size+test_size, replace=False)
+        for i in range(0, train_size):
+            copy("cropped/"+set[i], "part7_training")
+        for i in range(train_size, train_size+val_size):
+            copy("cropped/"+set[i], "part7_validation")
+        for i in range(train_size+val_size, train_size+val_size+test_size):
+            copy("cropped/"+set[i], "part7_test")
+    print("Finish splitting sets")
+            
 
-def split_one_set(name, size, dest_file, used_image_no):
-    counter = 0
-    while (counter < size):
-        r = random.randint(1, 200)
-        if r in used_image_no:
-            continue
-        filename = name+str(r)+'.'+'jpg'
-        try:
-            im = imread("cropped/"+filename)
-            imsave(dest_file+"/"+filename, im)
-            used_image_no.append(r)
-            counter += 1
-        except:
-            pass
+def build_act_dict():
+    dict = {}
+    for file in os.listdir("cropped"):
+        name = re.sub(r"\d", "", file.split(".")[0])
+        if name in dict:
+            dict[name].append(file)
+        else:
+            dict[name] = [file]
+    return dict

@@ -46,7 +46,8 @@ def main():
         download_image(act)
         
     #part7()
-    part8()
+    #part8()
+    #part8()
     
 
 def part7():
@@ -131,13 +132,17 @@ def part8():
     lam = 1e-9 # right now lamda is set to 0. Need to change it for part 8?
     grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
         max_iter, mini_batch_size, lam, W0, b0, W1, b1, 8)
+        
+
+def part9():
+    
     
     
 def grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
     max_iter, mini_batch_size, lam, W0, b0, W1, b1, part):
     global train_performance, test_performance, val_performance
     
-    x = tf.placeholder(tf.float32, [None, 1024])
+    x = tf.placeholder(tf.float32, [None, x_train.shape[1]])
         
     layer1 = tf.nn.tanh(tf.matmul(x, W0)+b0)
     layer2 = tf.matmul(layer1, W1)+b1

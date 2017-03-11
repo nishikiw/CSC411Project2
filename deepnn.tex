@@ -19,7 +19,7 @@
 \begin{document}
 
 \title{CSC411 - Project \#2}
-\author{Michael Wong - [Student Number]\\Yijin (Catherine) Wang - 998350476}
+\author{Michael Wong - [999806232]\\Yijin (Catherine) Wang - 998350476}
 \maketitle
 
 \clearpage
@@ -330,7 +330,7 @@ So for $n-1$ layers, we have $k^2(n-1)$ multiplications, and $n$ gradient calcul
 
 \clearpage
 
-\section*{Part 6}
+\section*{Part 7}
 \paragraph{Question}
 I am providing the TensorFlow code for training a single-hidden-layer fully-connected network here. The training is done using mini-batches. Modify the code to classify faces of the 6 actors in Project 1. Use a fully-connected neural network with a single hidden layer. In your report, include the learning curve for the test, training, and validation sets, and the final performance classification on the test set. Include a text description of your system. In particular, describe how you preprocessed the input and initialized the weights, what activation function you used, and what the exact architecture of the network that you selected was. Experiment with different settings to produce the best performance, and report what you did to obtain the best performance.\\
 
@@ -346,6 +346,23 @@ Unlike in Project 1, you must remove non-faces from your dataset. Use the SHA-25
 \end{figure*}
 
 The final performance on test set is 86\%.\\
-{[}Description of System{]}
+Before starting building the network, we need to first preprocess the images. Similar to Project 1, we downloaded the images using actors.txt. Then the images are cropped, greyscaled, and saved in the cropped folder. However we also check the hash of each image (indication of bad image). If it doesn't match with the hash code provided in actors.txt, we will not save it in the cropped folder either.
+Afterwards, we need to split the dataset into 3 - training, test, and validation. However, due to the hash code limitation, there are less images for each actors compare to Project 1. In the end we decided to split the dataset this way:
+\begin {itemize}
+	\item 30 images per actor in the test set. (as requested)
+	\item 75 images per actor in the training set. We tried to make the training set as large as possible while maintaining a reasonable size for the validation set.
+	\item 15 images per actor in the validation. The size of validation is usually smaller than the test set and training set. However at the same time we didn't want to make the validation set to be too small. Therefore we made it 15 images.
+\end {itemize}
+As for the structure, we used a very similar architecture to the started code provided. In the structure, we have:
+\begin {itemize}
+	\item Input layer of size 1024
+	\item A single layer of 100 hidden units. Each hidden unit is fully connected to the input layer. The activation of the hidden units is $tanh$, so that the weights can be pulled towards different direction when training the model.
+	\item A output layer consist of 6 units that are all fully connected to the 100 hidden units. The activation of the output layer is just itself (matrix multiplication).
+	\item The output layer will be passed into a softmax. Then the output of softmax will be used to calculate the Negative Log Loss cost of the model.
+	\item We also randomly select a mini-batch at each training iteration to avoid local minima.
+	\item We use the $Adam Optimizer$ for training. It is a variation of gradient descent.
+\end {itemize}
+For the weights, we randomly initiated it to small random numbers to break the symmetry.
+As for parameters (eg. mini-batch size, number of hidden units, $\alpha$ etc) and the structure of network, we obtained them through trial and error. We experiemented with different setting, and decided each parameter based on the validation performance.
 
 \end{document}

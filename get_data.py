@@ -92,8 +92,7 @@ def download_image(actor_list):
                                 crop_border = (x1,y1,x2,y2)
                                 im2 = im.crop(crop_border)
                                 im3 = imresize(im2, (32, 32))
-                                im4 = rgb2gray(im3)
-                                imsave("cropped/" + filename, im4)
+                                imsave("cropped/" + filename, im3)
                             file.close()
                         except:
                             pass
@@ -111,12 +110,28 @@ def split_set(act, train_size, val_size, test_size, part):
         np.random.seed(20)
         set = np.random.choice(dict[lastname], train_size+val_size+test_size, replace=False)
         for i in range(0, train_size):
-            copy("cropped/"+set[i], "part"+str(part)+"_training")
+            im = Image.open("cropped/"+set[i])
+            im2 = rgb2gray(im)
+            imsave("part"+str(part)+"_training/" + set[i], im2)
         for i in range(train_size, train_size+val_size):
-            copy("cropped/"+set[i], "part"+str(part)+"_validation")
+            im = Image.open("cropped/"+set[i])
+            im2 = rgb2gray(im)
+            imsave("part"+str(part)+"_validation/" + set[i], im2)
         for i in range(train_size+val_size, train_size+val_size+test_size):
-            copy("cropped/"+set[i], "part"+str(part)+"_test")
+            im = Image.open("cropped/"+set[i])
+            im2 = rgb2gray(im)
+            imsave("part"+str(part)+"_test/" + set[i], im2)
     print("Finish splitting sets")
+    
+def part_10_split_set():
+    create_dir("part10_training")
+    create_dir("part10_validation")
+    create_dir("part10_test")
+    dirs = ["training", "validation", "test"]
+    for dir in dirs:
+        for file in os.listdir("part7_" + dir):
+            copy("part7_" + dir +"/" + file, "part10_" + dir)
+            
             
 
 def build_act_dict():

@@ -327,4 +327,25 @@ which have $k^2$ multiplication.
 \[\nabla_i C = \frac{\partial C}{\partial H_i} \cdot H_{i-1}\]
 which have $k$ multiplication.
 So for $n-1$ layers, we have $k^2(n-1)$ multiplications, and $n$ gradient calculation takes $kn$ multiplications. The runtime for backpropagation is polynomial. If we don't use backpropagation and any storage method, for layer $i$, we need to recalculate layer the derivative at layer $i+1$, the runtime is exponential. Therefore, backpropagation speed up the computation of the gradient.
+
+\clearpage
+
+\section*{Part 6}
+\paragraph{Question}
+I am providing the TensorFlow code for training a single-hidden-layer fully-connected network here. The training is done using mini-batches. Modify the code to classify faces of the 6 actors in Project 1. Use a fully-connected neural network with a single hidden layer. In your report, include the learning curve for the test, training, and validation sets, and the final performance classification on the test set. Include a text description of your system. In particular, describe how you preprocessed the input and initialized the weights, what activation function you used, and what the exact architecture of the network that you selected was. Experiment with different settings to produce the best performance, and report what you did to obtain the best performance.\\
+
+Use 30 images per actor in the test set.\\
+
+Unlike in Project 1, you must remove non-faces from your dataset. Use the SHA-256 hashes to remove bad images. You may additionally hardcode the indices of the images that you’d like to remove.\\
+
+\paragraph{Answer}
+\begin{figure*}[h]
+	\centering
+	\includegraphics[scale=0.8]{part7.png}
+	\caption*{Part 7 Learning Curve}
+\end{figure*}
+
+The final performance on test set is 86\%.\\
+{[}Description of System{]}
+
 \end{document}

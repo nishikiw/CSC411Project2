@@ -365,4 +365,13 @@ As for the structure, we used a very similar architecture to the started code pr
 For the weights, we randomly initiated it to small random numbers to break the symmetry.
 As for parameters (eg. mini-batch size, number of hidden units, $\alpha$ etc) and the structure of network, we obtained them through trial and error. We experiemented with different setting, and decided each parameter based on the validation performance.
 
+\clearpage
+
+\section*{Part 8}
+\paragraph{Question}
+You are not required to use regularization in Part 7 (although that would produce nicer weight visualization). Find a scenario where using regularization is necessary in the context of face classification, and find the best regularization parameter $\lambda$.
+
+\paragraph{Answer}
+Regularization prevents overfitting, so we tried to come up a dataset that could have overfitting. We have a training set of all 6 actors from part 7 but each actor only has 1 image. The validation set contains 20 images per actor, and the test set contains 100 images per actor. Without regularization, the performance on training set after 8000 iterations is 100\%, while test set performance is 30\%. With regularization where $\lambda = 10^{-9}$, the performance of test set increased to 33\%. The difference equals $\frac{75}{\sqrt{600}}$ where 600 is the test set size. Therefore, regularization is necessary in the context of face classification.
+
 \end{document}

@@ -22,7 +22,8 @@ import tensorflow as tf
 part7_act =['Fran Drescher', 'America Ferrera', 'Kristin Chenoweth', 'Alec Baldwin', \
     'Bill Hader', 'Steve Carell']
     
-part8_act = ['Fran Drescher', 'Kristin Chenoweth']
+part8_act = ['Fran Drescher', 'America Ferrera', 'Kristin Chenoweth', 'Alec Baldwin', \
+    'Bill Hader', 'Steve Carell']
  
 # Performance list for part 7
 train_performance = []
@@ -94,17 +95,17 @@ def part7():
     
 def part8():
     
+    # without lam: train: 1.0, test: 0.30, val: 0.29
+    # with lam: train: 1.0, test: 0.33, val: 0.33
     if not os.path.exists("part8_test"):
         print("Set up training, validation and test set for part 8")
-        split_set(part8_act, 130, 10, 20, 8) # training, val, test, part
+        split_set(part8_act, 1, 20, 100, 8) # training, val, test, part
     
     # Expect improvement of +-(75/sqrt(N))%
-    nhid = 1000 # number of hidden units
-    alpha = 0.0001
-    max_iter = 30000
-    mini_batch_size = 120
-    lam = 0.0001 # right now lamda is set to 0. Need to change it for part 8?
-    #lam = 0.0
+    nhid = 300 # number of hidden units
+    alpha = 0.001
+    max_iter = 8000
+    mini_batch_size = 1
     
     x_test, y_test = get_whole_set(part8_act, "part8_test")
     x_val, y_val = get_whole_set(part8_act, "part8_validation")
@@ -122,7 +123,12 @@ def part8():
     np.random.seed(103)    
     b1 = tf.Variable(np.random.normal(0.0, 0.1, \
         (y_train.shape[1])).astype(float32))
-    
+        
+    lam = 0.0
+    grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
+        max_iter, mini_batch_size, lam, W0, b0, W1, b1, 8)
+        
+    lam = 1e-9 # right now lamda is set to 0. Need to change it for part 8?
     grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
         max_iter, mini_batch_size, lam, W0, b0, W1, b1, 8)
     

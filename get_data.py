@@ -101,21 +101,21 @@ def download_image(actor_list):
     print("Finished downloading!")
 
 
-def split_set(act, train_size, val_size, test_size):
-    create_dir("part7_training")
-    create_dir("part7_validation")
-    create_dir("part7_test")
+def split_set(act, train_size, val_size, test_size, part):
+    create_dir("part"+str(part)+"_training")
+    create_dir("part"+str(part)+"_validation")
+    create_dir("part"+str(part)+"_test")
     dict = build_act_dict()
     for name in act:
         lastname = name.split()[1].lower()
-        np.random.seed(0)
+        np.random.seed(20)
         set = np.random.choice(dict[lastname], train_size+val_size+test_size, replace=False)
         for i in range(0, train_size):
-            copy("cropped/"+set[i], "part7_training")
+            copy("cropped/"+set[i], "part"+str(part)+"_training")
         for i in range(train_size, train_size+val_size):
-            copy("cropped/"+set[i], "part7_validation")
+            copy("cropped/"+set[i], "part"+str(part)+"_validation")
         for i in range(train_size+val_size, train_size+val_size+test_size):
-            copy("cropped/"+set[i], "part7_test")
+            copy("cropped/"+set[i], "part"+str(part)+"_test")
     print("Finish splitting sets")
             
 

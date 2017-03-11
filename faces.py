@@ -19,8 +19,10 @@ import os
 from scipy.io import loadmat
 import tensorflow as tf
 
-act =['Fran Drescher', 'America Ferrera', 'Kristin Chenoweth', 'Alec Baldwin', \
+part7_act =['Fran Drescher', 'America Ferrera', 'Kristin Chenoweth', 'Alec Baldwin', \
     'Bill Hader', 'Steve Carell']
+    
+part8_act = ['Fran Drescher', 'Kristin Chenoweth']
  
 # Performance list for part 7
 train_performance = []
@@ -34,45 +36,34 @@ def main():
     
     # Set up architecture of the network
     # placeholder means the var won't change during runtime
-    x = tf.placeholder(tf.float32, [None, 1024])
+    
     
     # download, and split dataset
     
     if not os.path.exists("cropped"):
         print("Downloading images")
         download_image(act)
-    
-    if not os.path.exists("part7_test"):
-        print("Set up training, validation and test set")
-        split_set(act, 75, 15, 30) # training, val, test
         
-    part7(x)
-    #part8(x)
+    #part7()
+    part8()
     
 
-def part7(x):
+def part7():
+    
+    if not os.path.exists("part7_test"):
+        print("Set up training, validation and test set for part 7")
+        split_set(part7_act, 75, 15, 30, 7) # training, val, test
+    
     #parameters used for part 7:
-    nhid = 300              # number of hidden units
+    nhid = 100             # number of hidden units
     alpha = 0.00001
     max_iter = 2000         #plot from 0 to 2000, every 200
     mini_batch_size = 50
     lam = 0.0000 
     
-    grad_descent(x, nhid, alpha, max_iter, mini_batch_size, lam, 7)
-    
-    x_axis = np.arange(11) * 200
-    plt.ylim(0,110)
-    plt.plot(x_axis, test_performance, label="test")
-    plt.plot(x_axis, train_performance, label="training")
-    plt.plot(x_axis, val_performance, label="validation")
-    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
-    plt.xlabel('Iteration')
-    plt.ylabel('Correctness(%)')
-    plt.savefig("part7.png")
-    
-    
-def grad_descent(x, nhid, alpha, max_iter, mini_batch_size, lam, part):
-    global train_performance, test_performance, val_performance
+    x_test, y_test = get_whole_set(part7_act, "part7_test")
+    x_val, y_val = get_whole_set(part7_act, "part7_validation")
+    x_train, y_train = get_whole_set(part7_act, "part7_training")
     
     W0 = tf.Variable(np.random.normal(0.0, 0.1, \
         (1024, nhid)).astype(float32)/math.sqrt(1024 * nhid))
@@ -80,15 +71,73 @@ def grad_descent(x, nhid, alpha, max_iter, mini_batch_size, lam, part):
         (nhid)).astype(float32)/math.sqrt(nhid))
     
     W1 = tf.Variable(np.random.normal(0.0, 0.1, \
-        (nhid, 6)).astype(float32)/math.sqrt(6 * nhid))
+        (nhid, y_train.shape[1])).astype(float32)/math.sqrt(y_train.shape[1] * \
+        nhid))
     b1 = tf.Variable(np.random.normal(0.0, 0.1, \
-        (6)).astype(float32)/math.sqrt(6))
+        (y_train.shape[1])).astype(float32)/math.sqrt(y_train.shape[1]))
+    
+    grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
+        max_iter, mini_batch_size, lam, W0, b0, W1, b1, 7)
+    
+    x_axis = np.arange(11) * 200
+    
+    plt.ylim(0,110)
+    plt.plot(x_axis, test_performance, label="test")
+    plt.plot(x_axis, train_performance, label="training")
+    plt.plot(x_axis, val_performance, label="validation")
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, \
+        mode="expand", borderaxespad=0.)
+    plt.xlabel('Iteration')
+    plt.ylabel('Correctness(%)')
+    plt.savefig("part7.png")
+    
+    
+def part8():
+    
+    if not os.path.exists("part8_test"):
+        print("Set up training, validation and test set for part 8")
+        split_set(part8_act, 130, 10, 20, 8) # training, val, test, part
+    
+    # Expect improvement of +-(75/sqrt(N))%
+    nhid = 1000 # number of hidden units
+    alpha = 0.0001
+    max_iter = 30000
+    mini_batch_size = 120
+    lam = 0.0001 # right now lamda is set to 0. Need to change it for part 8?
+    #lam = 0.0
+    
+    x_test, y_test = get_whole_set(part8_act, "part8_test")
+    x_val, y_val = get_whole_set(part8_act, "part8_validation")
+    x_train, y_train = get_whole_set(part8_act, "part8_training")
+    
+    np.random.seed(100)
+    W0 = tf.Variable(np.random.normal(0.0, 0.1, \
+        (1024, nhid)).astype(float32))
+    np.random.seed(101)
+    b0 = tf.Variable(np.random.normal(0.0, 0.1, \
+        (nhid)).astype(float32))
+    np.random.seed(102)
+    W1 = tf.Variable(np.random.normal(0.0, 0.1, \
+        (nhid, y_train.shape[1])).astype(float32))
+    np.random.seed(103)    
+    b1 = tf.Variable(np.random.normal(0.0, 0.1, \
+        (y_train.shape[1])).astype(float32))
+    
+    grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
+        max_iter, mini_batch_size, lam, W0, b0, W1, b1, 8)
+    
+    
+def grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
+    max_iter, mini_batch_size, lam, W0, b0, W1, b1, part):
+    global train_performance, test_performance, val_performance
+    
+    x = tf.placeholder(tf.float32, [None, 1024])
         
     layer1 = tf.nn.tanh(tf.matmul(x, W0)+b0)
     layer2 = tf.matmul(layer1, W1)+b1
     
     y = tf.nn.softmax(layer2)
-    y_ = tf.placeholder(tf.float32, [None, 6])
+    y_ = tf.placeholder(tf.float32, [None, y_train.shape[1]])
     
     # regularization/penalty
     # according to class, weight penalty is used when the network is overfitting
@@ -110,9 +159,6 @@ def grad_descent(x, nhid, alpha, max_iter, mini_batch_size, lam, part):
     correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     
-    x_test, y_test = get_whole_set(act, "part7_test")
-    x_val, y_val = get_whole_set(act, "part7_validation")
-    x_train, y_train = get_whole_set(act, "part7_training")
     
     for i in range(max_iter+1):
         # <-change size of mini batch here. Max is 75 for now
@@ -135,6 +181,21 @@ def grad_descent(x, nhid, alpha, max_iter, mini_batch_size, lam, part):
             print ("Validation:", acc_v)
         
             print ("Penalty:", sess.run(decay_penalty))
+        
+        if part == 8 and i % 500 == 0:
+            print ("i=",i)
+            print ("Cost:", sess.run(reg_NLL, feed_dict={x: x_train, y_:y_train}))
+            acc_tr = sess.run(accuracy,feed_dict={x: x_train, y_: y_train})
+            print ("Train:", acc_tr)
+            
+            acc_t = sess.run(accuracy, feed_dict={x: x_test, y_: y_test})
+            print ("Test:", acc_t)
+        
+            acc_v = sess.run(accuracy,feed_dict={x: x_val, y_: y_val})
+            print ("Validation:", acc_v)
+        
+            print ("Penalty:", sess.run(decay_penalty))
+            
     
 
 # helper function to read the images
@@ -146,7 +207,7 @@ def getArray (str):
 # this is used to get a mini batch from the training dataset
 def get_train_batch(n, x_train, y_train): # n = image per actor in batch
     x = zeros((0,1024))
-    y = zeros((0,6))
+    y = zeros((0,y_train.shape[1]))
     
     idx = rn.sample(range(x_train.shape[0]), n)
     
@@ -159,15 +220,15 @@ def get_train_batch(n, x_train, y_train): # n = image per actor in batch
 # get whole training set
 def get_whole_set(act, file):
     x = zeros((0,1024))
-    y = zeros((0,6))
-    for k in range(6):
+    y = zeros((0,len(act)))
+    for k in range(len(act)):
         counter = 0
         name = act[k].split()[1].lower()
         for fn in os.listdir('./' + file):
             if (name in fn):
                 x = vstack((x, getArray(file + "/" + fn)))
                 counter += 1
-        one_hot = zeros(6)
+        one_hot = zeros(len(act))
         one_hot[k] = 1
         y = vstack((y, tile(one_hot, (counter,1))))
     return x, y
@@ -179,11 +240,7 @@ def get_whole_set(act, file):
 
 """
 # variable means the var will be changed during runtime
-nhid = 700 # number of hidden units
-alpha = 0.00001
-max_iter = 30000
-mini_batch_size = 20
-lam = 0.005 # right now lamda is set to 0. Need to change it for part 8?
+
 """
 """
 # At iteration 9500, Results of changing: 

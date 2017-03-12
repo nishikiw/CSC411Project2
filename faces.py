@@ -43,11 +43,11 @@ def main():
     
     if not os.path.exists("cropped"):
         print("Downloading images")
-        download_image(act)
+        download_image(part7_act)
         
     #part7()
     #part8()
-    #part8()
+    part9()
     
 
 def part7():
@@ -61,7 +61,7 @@ def part7():
     alpha = 0.00001
     max_iter = 2000         #plot from 0 to 2000, every 200
     mini_batch_size = 50
-    lam = 0.0000 
+    lam = 0.0000
     
     x_test, y_test = get_whole_set(part7_act, "part7_test")
     x_val, y_val = get_whole_set(part7_act, "part7_validation")
@@ -80,6 +80,9 @@ def part7():
     
     grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
         max_iter, mini_batch_size, lam, W0, b0, W1, b1, 7)
+        
+    # Save final_W0 for part 9.
+    np.savetxt("part9_w0.txt", final_W0)
     
     x_axis = np.arange(11) * 200
     
@@ -136,6 +139,49 @@ def part8():
 
 def part9():
     
+    if not os.path.exists("part7_test"):
+        print("Set up training, validation and test set for part 7")
+        split_set(part7_act, 75, 15, 30, 7) # training, val, test
+    
+    if not os.path.exists("part9_w0.txt"):
+        #parameters used for part 9:
+        nhid = 100             # number of hidden units
+        alpha = 0.00001
+        max_iter = 30000         #plot from 0 to 2000, every 200
+        mini_batch_size = 50
+        lam = 0.000001
+        
+        x_test, y_test = get_whole_set(part7_act, "part7_test")
+        x_val, y_val = get_whole_set(part7_act, "part7_validation")
+        x_train, y_train = get_whole_set(part7_act, "part7_training")
+        
+        W0 = tf.Variable(np.random.normal(0.0, 0.1, \
+            (1024, nhid)).astype(float32)/math.sqrt(1024 * nhid))
+        b0 = tf.Variable(np.random.normal(0.0, 0.1, \
+            (nhid)).astype(float32)/math.sqrt(nhid))
+        
+        W1 = tf.Variable(np.random.normal(0.0, 0.1, \
+            (nhid, y_train.shape[1])).astype(float32)/math.sqrt(y_train.shape[1] * \
+            nhid))
+        b1 = tf.Variable(np.random.normal(0.0, 0.1, \
+            (y_train.shape[1])).astype(float32)/math.sqrt(y_train.shape[1]))
+        
+        final_W0, final_W1 = grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
+            max_iter, mini_batch_size, lam, W0, b0, W1, b1, 8)
+            
+        # Save final_W0 for part 9.
+        np.savetxt("part9_w0.txt", final_W0)
+        np.savetxt("part9_w1.txt", final_W1)
+    
+    w0 = np.loadtxt("part9_w0.txt")
+    w1 = np.loadtxt("part9_w1.txt")
+    highest_units = np.argmax(w1, 0)
+    print("active unit for actor 0 = "+str(highest_units[0]))
+    imsave("part9_act0_unit.jpg", reshape(w0[:, highest_units[0]], (32, 32)), \
+        cmap = cm.gray)
+    print("active unit for actor 5 = "+str(highest_units[5]))
+    imsave("part9_act5_unit.jpg", reshape(w0[:, highest_units[5]], (32, 32)), \
+        cmap = cm.gray)
     
     
 def grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
@@ -191,8 +237,6 @@ def grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
             val_performance.append(acc_v * 100)
             print ("Validation:", acc_v)
         
-            print ("Penalty:", sess.run(decay_penalty))
-        
         if part == 8 and i % 500 == 0:
             print ("i=",i)
             print ("Cost:", sess.run(reg_NLL, feed_dict={x: x_train, y_:y_train}))
@@ -206,7 +250,8 @@ def grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
             print ("Validation:", acc_v)
         
             print ("Penalty:", sess.run(decay_penalty))
-            
+               
+    return sess.run(W0), sess.run(W1)
     
 
 # helper function to read the images

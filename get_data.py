@@ -61,7 +61,7 @@ def download_image(actor_list):
     create_dir("cropped")
     create_dir("uncropped")
     
-    testfile = urllib.URLopener()
+    testfile = urllib.request.URLopener()
     faces_files = ["facescrub_actors.txt", "facescrub_actresses.txt"]
     for face_file in faces_files:
         for a in actor_list:
@@ -91,8 +91,7 @@ def download_image(actor_list):
                                 y2 = int(box.split(",")[3])
                                 crop_border = (x1,y1,x2,y2)
                                 im2 = im.crop(crop_border)
-                                im3 = imresize(im2, (32, 32))
-                                imsave("cropped/" + filename, im3)
+                                imsave("cropped/" + filename, im2)
                             file.close()
                         except:
                             pass
@@ -108,20 +107,44 @@ def split_set(act, train_size, val_size, test_size, part):
     for name in act:
         lastname = name.split()[1].lower()
         np.random.seed(20)
-        set = np.random.choice(dict[lastname], train_size+val_size+test_size, replace=False)
-        for i in range(0, train_size):
-            im = Image.open("cropped/"+set[i])
-            im2 = rgb2gray(im)
-            imsave("part"+str(part)+"_training/" + set[i], im2)
-        for i in range(train_size, train_size+val_size):
-            im = Image.open("cropped/"+set[i])
-            im2 = rgb2gray(im)
-            imsave("part"+str(part)+"_validation/" + set[i], im2)
-        for i in range(train_size+val_size, train_size+val_size+test_size):
-            im = Image.open("cropped/"+set[i])
-            im2 = rgb2gray(im)
-            imsave("part"+str(part)+"_test/" + set[i], im2)
+        set = np.random.choice(dict[lastname], train_size+val_size+test_size+10, replace=False)
+        c_train, c_test, c_val = 0, 0, 0
+        i = 0
+        while c_train < train_size:
+            try:
+                im = Image.open("cropped/"+set[i])
+                im2 = imresize(im, (32, 32))
+                im3 = rgb2gray(im2)
+                imsave("part"+str(part)+"_training/" + set[i], im3)
+                i += 1
+                c_train += 1
+            except:
+                i += 1
+                pass
+        while c_val < val_size:
+            try:
+                im = Image.open("cropped/"+set[i])
+                im2 = imresize(im, (32, 32))
+                im3 = rgb2gray(im2)
+                imsave("part"+str(part)+"_validation/" + set[i], im3)
+                i += 1
+                c_val += 1
+            except:
+                i += 1
+                pass
+        while c_test < test_size:
+            try:
+                im = Image.open("cropped/"+set[i])
+                im2 = imresize(im, (32, 32))
+                im3 = rgb2gray(im2)
+                imsave("part"+str(part)+"_test/" + set[i], im3)
+                i += 1
+                c_test += 1
+            except:
+                i += 1
+                pass
     print("Finish splitting sets")
+    
     
 def part_10_split_set():
     create_dir("part10_training")
@@ -130,7 +153,10 @@ def part_10_split_set():
     dirs = ["training", "validation", "test"]
     for dir in dirs:
         for file in os.listdir("part7_" + dir):
-            copy("part7_" + dir +"/" + file, "part10_" + dir)
+            im = Image.open("cropped/" + file)
+            im2 = imresize(im, (227, 227))
+            imsave("part10_" + dir + "/" + file, im2)
+    print("Finish splitting part 10 set")
             
             
 

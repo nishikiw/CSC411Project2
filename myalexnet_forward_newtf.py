@@ -24,31 +24,84 @@ import matplotlib.image as mpimg
 from scipy.ndimage import filters
 import urllib
 from numpy import random
-
-
 import tensorflow as tf
-
 from caffe_classes import class_names
 
+from get_data import part_10_split_set
+from faces import grad_descent
+
+part10_act =['Fran Drescher', 'America Ferrera', 'Kristin Chenoweth', 'Alec Baldwin', \
+    'Bill Hader', 'Steve Carell']
+
+def setup_set(s):
+    im_set = []
+    dir = "part10_" + s
+    for file in os.listdir(dir):
+        im1 = (imread(dir + "/" + file)[:,:,:3]).astype(float32)
+        im1 = im1 - mean(im1)
+        im1[:, :, 0], im1[:, :, 2] = im1[:, :, 2], im1[:, :, 0]
+        im_set.append(im1)
+    return im_set
+
+def setup_y(act, file):
+    y = zeros((0,len(act)))
+    for k in range(len(act)):
+        counter = 0
+        name = act[k].split()[1].lower()
+        for fn in os.listdir('./' + file):
+            if (name in fn):
+                counter += 1
+        one_hot = zeros(len(act))
+        one_hot[k] = 1
+        y = vstack((y, tile(one_hot, (counter,1))))
+    return y
+
+def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
+    '''From https://github.com/ethereon/caffe-tensorflow
+    '''
+    c_i = input.get_shape()[-1]
+    assert c_i%group==0
+    assert c_o%group==0
+    convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
+    
+    
+    if group==1:
+        conv = convolve(input, kernel)
+    else:
+        input_groups =  tf.split(input, group, 3)   #tf.split(3, group, input)
+        kernel_groups = tf.split(kernel, group, 3)  #tf.split(3, group, kernel) 
+        output_groups = [convolve(i, k) for i,k in zip(input_groups, kernel_groups)]
+        conv = tf.concat(output_groups, 3)          #tf.concat(3, output_groups)
+    return  tf.reshape(tf.nn.bias_add(conv, biases), [-1]+conv.get_shape().as_list()[1:])
+
+
 train_x = zeros((1, 227,227,3)).astype(float32)
-train_y = zeros((1, 1000))
+#train_y = zeros((1, 1000))
 xdim = train_x.shape[1:]
-ydim = train_y.shape[1]
+#ydim = train_y.shape[1]
+
+# copy the set from part 7 to 10
+if not os.path.exists("part10_test"):
+    print("Set up training, validation and test set for part 10")
+    part_10_split_set() # training, val, test, part
 
 
+# append all images into a list. pass it into alexnet (up till conv4)
+# test and validation also has to be passed into alexnet
+train_im = setup_set("training")
+test_im = setup_set("test")
+val_im = setup_set("validation")
+print ("Finished setting up alexnet input!")
 
-################################################################################
-#Read Image, and change to BGR
 
-# first rescale the original face image to 227 x 227 x 3
-
-
+"""
 im1 = (imread("laska.png")[:,:,:3]).astype(float32)
 im1 = im1 - mean(im1)
 im1[:, :, 0], im1[:, :, 2] = im1[:, :, 2], im1[:, :, 0]
 
 im2 = (imread("poodle.png")[:,:,:3]).astype(float32)
 im2[:, :, 0], im2[:, :, 2] = im2[:, :, 2], im2[:, :, 0]
+"""
 
 
 ################################################################################
@@ -71,26 +124,6 @@ im2[:, :, 0], im2[:, :, 2] = im2[:, :, 2], im2[:, :, 0]
 #In Python 3.5, change this to:
 net_data = load(open("bvlc_alexnet.npy", "rb"), encoding="latin1").item()
 #net_data = load("bvlc_alexnet.npy").item()
-
-def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
-    '''From https://github.com/ethereon/caffe-tensorflow
-    '''
-    c_i = input.get_shape()[-1]
-    assert c_i%group==0
-    assert c_o%group==0
-    convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding=padding)
-    
-    
-    if group==1:
-        conv = convolve(input, kernel)
-    else:
-        input_groups =  tf.split(input, group, 3)   #tf.split(3, group, input)
-        kernel_groups = tf.split(kernel, group, 3)  #tf.split(3, group, kernel) 
-        output_groups = [convolve(i, k) for i,k in zip(input_groups, kernel_groups)]
-        conv = tf.concat(output_groups, 3)          #tf.concat(3, output_groups)
-    return  tf.reshape(tf.nn.bias_add(conv, biases), [-1]+conv.get_shape().as_list()[1:])
-
-
 
 x = tf.placeholder(tf.float32, (None,) + xdim)
 
@@ -157,7 +190,7 @@ conv4b = tf.Variable(net_data["conv4"][1])
 conv4_in = conv(conv3, conv4W, conv4b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
 conv4 = tf.nn.relu(conv4_in)
 
-
+"""
 #conv5
 #conv(3, 3, 256, 1, 1, group=2, name='conv5')
 k_h = 3; k_w = 3; c_o = 256; s_h = 1; s_w = 1; group = 2
@@ -193,13 +226,62 @@ fc8 = tf.nn.xw_plus_b(fc7, fc8W, fc8b)
 #prob
 #softmax(name='prob'))
 prob = tf.nn.softmax(fc8)
+"""
 
 init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)
 
-output = sess.run(conv4, feed_dict = {x: im1}
 
+if not os.path.exists("part10_train.txt"):
+    x_train = sess.run(conv4, feed_dict = {x: train_im})
+    x_train.resize(x_train.shape[0], x_train.shape[1] * x_train.shape[2] * x_train.shape[3])
+    np.savetxt("part10_train.txt", x_train)
+else:
+    x_train = np.loadtxt("part10_train.txt")
+    
+if not os.path.exists("part10_test.txt"):
+    x_test = sess.run(conv4, feed_dict = {x: test_im})
+    x_test.resize(x_test.shape[0], x_test.shape[1] * x_test.shape[2] * x_test.shape[3])
+    np.savetxt("part10_test.txt", x_test)
+else:
+    x_test = np.loadtxt("part10_test.txt")
+    
+if not os.path.exists("part10_val.txt"):
+    x_val = sess.run(conv4, feed_dict = {x: val_im})
+    x_val.resize(x_val.shape[0], x_val.shape[1] * x_val.shape[2] * x_val.shape[3])
+    np.savetxt("part10_val.txt", x_val)
+else:
+    x_val = np.loadtxt("part10_val.txt")
+    
+print ("Got output from alexnet!")
+
+y_train = setup_y(part10_act, "part10_training")
+y_test = setup_y(part10_act, "part10_test")
+y_val = setup_y(part10_act, "part10_validation")
+
+
+# pass it into part 7 grad desc
+nhid = 10000             # number of hidden units
+alpha = 0.00001
+max_iter = 10000         #plot from 0 to 2000, every 200
+mini_batch_size = 50
+lam = 0.0000 
+
+
+W0 = tf.Variable(np.random.normal(0.0, 0.1, \
+    (x_train.shape[1], nhid)).astype(float32)/math.sqrt(x_train.shape[1] * nhid))
+b0 = tf.Variable(np.random.normal(0.0, 0.1, \
+    (nhid)).astype(float32)/math.sqrt(nhid))
+
+W1 = tf.Variable(np.random.normal(0.0, 0.1, \
+    (nhid, y_train.shape[1])).astype(float32)/math.sqrt(y_train.shape[1] * \
+    nhid))
+b1 = tf.Variable(np.random.normal(0.0, 0.1, \
+    (y_train.shape[1])).astype(float32)/math.sqrt(y_train.shape[1]))
+
+grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
+    max_iter, mini_batch_size, lam, W0, b0, W1, b1, 8)
 
 """
 t = time.time()

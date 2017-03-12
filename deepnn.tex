@@ -345,7 +345,7 @@ Unlike in Project 1, you must remove non-faces from your dataset. Use the SHA-25
 	\caption*{Part 7 Learning Curve}
 \end{figure*}
 
-The final performance on test set is 86\%.\\
+The final performance on test set is 87\%.\\
 Before starting building the network, we need to first preprocess the images. Similar to Project 1, we downloaded the images using actors.txt. Then the images are cropped, greyscaled, and saved in the cropped folder. However we also check the hash of each image (indication of bad image). If it doesn't match with the hash code provided in actors.txt, we will not save it in the cropped folder either.
 Afterwards, we need to split the dataset into 3 - training, test, and validation. However, due to the hash code limitation, there are less images for each actors compare to Project 1. In the end we decided to split the dataset this way:
 \begin {itemize}

@@ -80,9 +80,6 @@ def part7():
     
     grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \
         max_iter, mini_batch_size, lam, W0, b0, W1, b1, 7)
-        
-    # Save final_W0 for part 9.
-    np.savetxt("part9_w0.txt", final_W0)
     
     x_axis = np.arange(11) * 200
     
@@ -176,12 +173,10 @@ def part9():
     w0 = np.loadtxt("part9_w0.txt")
     w1 = np.loadtxt("part9_w1.txt")
     highest_units = np.argmax(w1, 0)
-    print("active unit for actor 0 = "+str(highest_units[0]))
-    imsave("part9_act0_unit.jpg", reshape(w0[:, highest_units[0]], (32, 32)), \
-        cmap = cm.gray)
-    print("active unit for actor 5 = "+str(highest_units[5]))
-    imsave("part9_act5_unit.jpg", reshape(w0[:, highest_units[5]], (32, 32)), \
-        cmap = cm.gray)
+    for i in range(len(highest_units)):
+        print("active unit for actor "+str(i)+" = "+str(highest_units[i]))
+        imsave("part9_act"+str(i)+"_unit.jpg", reshape(w0[:, highest_units[i]], (32, 32)), \
+            cmap = cm.gray)
     
     
 def grad_descent(x_test, y_test, x_val, y_val, x_train, y_train, nhid, alpha, \

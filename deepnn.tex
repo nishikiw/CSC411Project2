@@ -19,7 +19,7 @@
 \begin{document}
 
 \title{CSC411 - Project \#2}
-\author{Michael Wong - [999806232]\\Yijin (Catherine) Wang - 998350476}
+\author{Yui Chit (Michael) Wong - 999806232\\Yijin (Catherine) Wang - 998350476}
 \maketitle
 
 \clearpage
@@ -373,5 +373,30 @@ You are not required to use regularization in Part 7 (although that would produc
 
 \paragraph{Answer}
 Regularization prevents overfitting, so we tried to come up a dataset that could have overfitting. We have a training set of all 6 actors from part 7 but each actor only has 1 image. The validation set contains 20 images per actor, and the test set contains 100 images per actor. Without regularization, the performance on training set after 8000 iterations is 100\%, while test set performance is 30\%. With regularization where $\lambda = 10^{-9}$, the performance of test set increased to 33\%. The difference equals $\frac{75}{\sqrt{600}}$ where 600 is the test set size. Therefore, regularization is necessary in the context of face classification.
+
+\clearpage
+
+\section*{Part 10}
+\paragraph{Question}
+Extract the values of the activations of AlexNet on the face images. In your report, explain how you did that. Use those as features in order to perform face classification: learn a fully-connected neural network that takes in the activations of the units in the AlexNet layer as inputs, and outputs the name of the person. In your report, include a description of the system you built and its performance, similarly to Part 7. It is possible to improve on the results of Part 7 by reducing the error rate by at least 30\%. I recommend starting out with only using the conv4 activations.
+
+\paragraph{Answer}
+Since we are comparing to the results of part 7, we first use a function to copy the same image used in part 7 (all training, test, and validation set) to a new folder. Notice the images used in part 7 is in greyscale, but the ones used in part 10 is in colour. We also resized the (cropped) image to $227\times227$, because that is the required input size of AlexNet. 
+Then we pass in the images in each set into the AlexNet, up to the conv4 layer. Here are the layers from input layer to conv4 layer:
+\begin {itemize}
+	\item Convolution layer 1
+	\item LRN (local response normalization) layer 1
+	\item Maxpool layer 1
+	\item Convolution layer 2
+	\item LRN layer 2
+	\item Maxpool layer 2
+	\item Convolution layer 3
+	\item Convolution layer 4
+\end {itemize}
+For each input image, the convolution layer 4 will output a $3\times3\times384$ array. We pass in all the images from the training, test, and validation set respectively, and extract the values from conv4 activations. We flattened the array and saved the values in $x\_train, x\_test, x\_val$ respectively. Then we pass in the each set into the network we created in part 7 (a multinomial classifier with a single layer of hidden unit) for training.
+{[}NEED RESULTS{]}
+
+\clearpage
+
 
 \end{document}
